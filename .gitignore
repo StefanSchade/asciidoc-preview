@@ -2,6 +2,8 @@
 .env
 zscaler.crt
 
+repo.txt
+
 # Created by https://www.toptal.com/developers/gitignore
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+visualstudiocode+windows+macos+linux
 
