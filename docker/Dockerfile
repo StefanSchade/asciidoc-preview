@@ -9,7 +9,7 @@ RUN apt-get update && \
     apt-get install -y \
     asciidoctor \
     nodejs \
-    npm \
+    npm && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +31,7 @@ RUN find /workspace/src -name "*.sh" -exec chmod +x {} + && \
     find /workspace/scripts -name "*.sh" -exec chmod + {} +
 
 # Set permissions
-RUN chown -R developer:developer /workspace/src /workspace/scripts /workspace/output && \
+RUN chown -R containeruser:containeruser /workspace/src /workspace/scripts /workspace/output && \
     chmod -R 755 /workspace/input
 
 USER containeruser
