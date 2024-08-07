@@ -20,7 +20,7 @@ RUN npm install -g livereloadx
 RUN useradd -ms /bin/bash containeruser
 
 # Create directories for mountpoints
-RUN mkdir -p /workspace/input /workspace/output
+RUN mkdir -p /workspace/input 
 
 # Copy the sources to the container
 COPY ../src /workspace/src
@@ -31,7 +31,7 @@ RUN find /workspace/src -name "*.sh" -exec chmod +x {} + && \
     find /workspace/scripts -name "*.sh" -exec chmod + {} +
 
 # Set permissions
-RUN chown -R containeruser:containeruser /workspace/src /workspace/scripts /workspace/output && \
+RUN chown -R containeruser:containeruser /workspace/src /workspace/scripts /workspace/logs && \
     chmod -R 755 /workspace/input
 
 USER containeruser

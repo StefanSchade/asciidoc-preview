@@ -1,0 +1,436 @@
+
+// File: .gitignore Depth: 0
+
+001 # my additions
+002 .env
+003 zscaler.crt
+004 
+005 repo.txt
+006 
+007 # Created by https://www.toptal.com/developers/gitignore
+008 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+visualstudiocode+windows+macos+linux
+009 
+010 ### IntelliJ ###
+011 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+012 
+013 # User-specific stuff:
+014 .idea/**/workspace.xml
+015 .idea/**/tasks.xml
+016 .idea/**/usage.statistics.xml
+017 .idea/**/dictionaries
+018 .idea/**/shelf
+019 .idea/**/ssl
+020 
+021 # Sensitive or high-churn files:
+022 .idea/**/dataSources/
+023 .idea/**/dataSources.ids
+024 .idea/**/dataSources.local.xml
+025 .idea/**/sqlDataSources.xml
+026 .idea/**/dynamic.xml
+027 .idea/**/uiDesigner.xml
+028 
+029 # Gradle:
+030 .idea/**/gradle.xml
+031 .idea/**/libraries
+032 
+033 # IntelliJ project-specific stuff:
+034 .idea/**/modules.xml
+035 .idea/**/modules
+036 .idea/**/hidden.xml
+037 .idea/**/workspace.xml
+038 .idea/**/tasks.xml
+039 .idea/**/misc.xml
+040 .idea/**/watcherTasks.xml
+041 .idea/**/usage.statistics.xml
+042 .idea/**/look-and-feel.xml
+043 .idea/**/dictionaries
+044 .idea/**/shelf
+045 
+046 # CMake:
+047 cmake-build-*/
+048 
+049 # Mongo Explorer plugin:
+050 .idea/**/mongoSettings.xml
+051 
+052 # File-based project format:
+053 *.iws
+054 
+055 # IntelliJ
+056 out/
+057 .idea/
+058 
+059 # mpeltonen/sbt-idea plugin
+060 .idea_modules/
+061 
+062 ### VisualStudioCode ###
+063 .vscode/*
+064 !.vscode/settings.json
+065 !.vscode/tasks.json
+066 !.vscode/launch.json
+067 !.vscode/extensions.json
+068 
+069 ### Windows ###
+070 # Windows image file caches
+071 Thumbs.db
+072 Thumbs.db:encryptable
+073 ehthumbs.db
+074 ehthumbs_vista.db
+075 
+076 # Folder config file
+077 Desktop.ini
+078 
+079 # Recycle Bin used on file shares
+080 $RECYCLE.BIN/
+081 
+082 # Windows shortcuts
+083 *.lnk
+084 
+085 ### macOS ###
+086 # General
+087 .DS_Store
+088 .AppleDouble
+089 .LSOverride
+090 
+091 # Icon must end with two \r
+092 Icon
+093 
+094 # Thumbnails
+095 ._*
+096 
+097 # Files that might appear in the root of a volume
+098 .DocumentRevisions-V100
+099 .fseventsd
+100 .Spotlight-V100
+101 .TemporaryItems
+102 .Trashes
+103 .VolumeIcon.icns
+104 .com.apple.timemachine.donotpresent
+105 
+106 # Directories potentially created on remote AFP share
+107 .AppleDB
+108 .AppleDesktop
+109 Network Trash Folder
+110 Temporary Items
+111 .apdisk
+112 
+113 ### Linux ###
+114 *~
+115 # temporary files which can be created if a process still has a handle open of a deleted file
+116 .fuse_hidden*
+117 # KDE directory preferences
+118 .directory
+119 # Linux trash folder which might appear on any partition or disk
+120 .Trash-*
+121 # .nfs files are created when an open file is removed but is still being accessed
+122 .nfs*
+123 
+124 ### Other ###
+125 # Compiled source #
+126 ###################
+127 *.com
+128 *.class
+129 *.dll
+130 *.exe
+131 *.o
+132 *.so
+133 *.d
+134 
+135 # Packages #
+136 ############
+137 # it's better to unpack these files and commit the raw source
+138 # git has its own built-in compression methods
+139 *.7z
+140 *.dmg
+141 *.gz
+142 *.iso
+143 *.jar
+144 *.rar
+145 *.tar
+146 *.zip
+147 
+148 # Logs and databases #
+149 ######################
+150 *.log
+151 *.sql
+152 *.sqlite
+153 
+154 # OS-generated files #
+155 ######################
+156 .DS_Store
+157 .DS_Store?
+158 ._*
+159 .Spotlight-V100
+160 .Trashes
+161 ehthumbs.db
+162 Thumbs.db
+
+// File: docker\Dockerfile Depth: 1
+
+01 # Use an official Ubuntu as a parent image
+02 FROM ubuntu:latest
+03 
+04 # Set environment variables to non-interactive
+05 ENV DEBIAN_FRONTEND=noninteractive
+06 
+07 # Install necessary dependencies
+08 RUN apt-get update && \
+09     apt-get install -y \
+10     asciidoctor \
+11     nodejs \
+12     npm && \
+13     apt-get clean && \
+14     rm -rf /var/lib/apt/lists/*
+15 
+16 # Install livereloadx
+17 RUN npm install -g livereloadx
+18 
+19 # Create a non-root user
+20 RUN useradd -ms /bin/bash containeruser
+21 
+22 # Create directories for mountpoints
+23 RUN mkdir -p /workspace/input 
+24 
+25 # Copy the sources to the container
+26 COPY ../src /workspace/src
+27 COPY ../scripts /workspace/scripts
+28 
+29 # Set the entrypoint script
+30 RUN find /workspace/src -name "*.sh" -exec chmod +x {} + && \
+31     find /workspace/scripts -name "*.sh" -exec chmod + {} +
+32 
+33 # Set permissions
+34 RUN chown -R containeruser:containeruser /workspace/src /workspace/scripts && \
+35     chmod -R 755 /workspace/input
+36 
+37 USER containeruser
+38 WORKDIR /workspace
+39 
+40 # Use the entrypoint script
+41 ENTRYPOINT ["/workspace/src/main.sh"]
+42 
+
+// File: scripts\post_create.sh Depth: 1
+
+
+// File: scripts\run_asciidoc_preview.cmd Depth: 1
+
+01 @echo off
+02 REM Script to build and start the asciidoc-preview container
+03 
+04 if "%1"=="" (
+05     echo Usage: run_asciidoc_preview.cmd [document_path]
+06     exit /b 1
+07 )
+08 
+09 set DOCUMENT_DIR=%~1
+10 
+11 IF NOT EXIST "%DOCUMENT_DIR%" (
+12     echo The specified path does not exist.
+13     exit /b 1
+14 )
+15 
+16 REM Check if the path is absolute
+17 echo %DOCUMENT_DIR% | findstr /R "^[a-zA-Z]:\\" > nul
+18 if %ERRORLEVEL% neq 0 (
+19     REM Convert relative path to absolute path
+20     set DOCUMENT_DIR=%~dp0%DOCUMENT_DIR%
+21 )
+22 
+23 cd ..
+24 set IMAGE_NAME=dev-environment
+25 docker build -t %IMAGE_NAME% -f "docker/Dockerfile" .
+26 docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace dev-environment
+27 cd scripts
+
+// File: src\generate_output\api.sh Depth: 2
+
+01 #! /bin/bash
+02 #
+03 # description:
+04 #
+05 # this file contains the function definitions that are supposed to be accessed
+06 # by the main function within this folder.
+07 
+08 source "$SCRIPT_DIR/generate_output/check_input_mountpoint.sh"
+09 
+10 refresh_output() {
+11 
+12    check_input_mountpoint
+13 
+14 }
+
+// File: src\generate_output\check_input_mountpoint.sh Depth: 2
+
+01 #!/bin/bash
+02 
+03 # Function to check if the input directory is correctly mounted
+04 check_input_directory() {
+05   local input_dir=$1
+06   if [ -d "$input_dir" ]; then
+07     echo "$input_dir exists." >&2
+08   else
+09     echo "$input_dir does not exist." >&2
+10     exit 1
+11   fi
+12 }
+
+// File: src\helper\logger.sh Depth: 2
+
+01 #!/bin/bash
+02 
+03 # description:
+04 # this tool helps to perform logging from bash scripts. It has the following
+05 # features
+06 # - provide log levels
+07 # - limit the logfile size by roling
+08 #
+09 # usage:
+10 # log "INFO" "This is an info message."
+11 # log "ERROR" "This is an error message."
+12 # log "DEBUG" "This is a debug message."
+13 # log "INFO" "The log function" "can take" "multiple messages" "at once"
+14 
+15 
+16 : "${LOG_FILE:=/var/log/default_log_file.log}"    # default path if not set externally
+17 : "${LOG_LEVEL:=INFO}"                            # default log level if not set ext.
+18 
+19 MAX_SIZE=$((6 * 1024 * 1024))           # 6 MB
+20 THRESHOLD_SIZE=$((5 * 1024 * 1024))     # 5 MB
+21 
+22 log() {
+23     local level=$1
+24     shift
+25     local message=$@
+26     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+27 
+28     declare -A levels=( ["ERROR"]=0 ["WARN"]=1 ["INFO"]=2 ["DEBUG"]=3 )
+29     if (( ${levels[$level]} <= ${levels[$LOG_LEVEL]} )); then
+30         echo "$timestamp [$level] $message" >> "$LOG_FILE"
+31     fi
+32 
+33     # Check log file size and rotate if necessary
+34     local file_size=$(stat -c%s "$LOG_FILE")
+35     if (( file_size > MAX_SIZE )); then
+36         echo "Log file size exceeded $MAX_SIZE bytes, rotating log file." >&2
+37         local temp_file=$(mktemp)
+38 
+39         tail -c $THRESHOLD_SIZE "$LOG_FILE" > "$temp_file" && cat "$temp_file" > "$LOG_FILE"
+40         truncate -s $THRESHOLD_SIZE "$LOG_FILE"
+41         rm "$temp_file"
+42         echo "Log file trimmed to $THRESHOLD_SIZE bytes." >&2
+43     fi
+44  }
+45 
+46 # Set desired log level (e.g., INFO, DEBUG, ERROR)
+47 LOG_LEVEL="DEBUG"
+48 
+49 
+
+// File: src\helper\log_helper.sh Depth: 2
+
+01 <LeftMouse>#!/bin/bash
+02 
+03 log_script_name() {
+04     local script_name=$(basename "$0")
+05     local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+06 
+07     echo "**""${star_line}""**"
+08     echo "* ""${script_name}"" *"
+09     echo "**""${star_line}""**"
+10 }
+11 #!/bin/bash
+12 
+13 log_script_name() {
+14     local script_name=$(basename "$0")
+15     local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+16 
+17     echo "**""${star_line}""**"
+18     echo "* ""${script_name}"" *"
+19     echo "**""${star_line}""**"
+20 }
+21 #!/bin/bash
+22 
+23 log_script_name() {
+24     local script_name=$(basename "$0")
+25     local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+26 
+27     echo "**""${star_line}""**"
+28     echo "* ""${script_name}"" *"
+29     echo "**""${star_line}""**"
+30 }
+31 #!/bin/bash
+32 
+33 log_script_name() {
+34     local script_name=$(basename "$0")
+35     local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+36 
+37     echo "**""${star_line}""**"
+38     echo "* ""${script_name}"" *"
+39     echo "**""${star_line}""**"
+40 }
+41 #!/bin/bash
+42 
+43 log_script_name() {
+44     local script_name=$(basename "$0")
+45     local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+46 
+47     echo "**""${star_line}""**"
+48     echo "* ""${script_name}"" *"
+49     echo "**""${star_line}""**"
+50 }
+51 
+
+// File: src\main.sh Depth: 1
+
+01 #!/bin/bash
+02 
+03 # author: Stefan Schade
+04 #
+05 # description:
+06 # starts the asciidoc-preview by performing these 3 tasks 
+07 # 1. scan INPUT_DIR for asciidoc files (*.adoc), transform them into
+08 #    html and replicate the input structure in OUTPUT_DIR
+09 # 2. setting up a local web server that serves the html files to
+10 #    localhost:4000. This server will refresh in case the html changes
+11 # 3. watch the INPUT_DIR for changes to the asciidoc files or directories
+12 #    and update the html.
+13 
+14 
+15 # Get the directory of the currently executing script
+16 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+17 
+18 # Define the input and output directories
+19 OUTPUT_DIR=/workspace/output
+20 INPUT_DIR=/workspace/input
+21 LOG_DIR=/workspace/logs
+22 LOG_FILE="$LOG_DIR/logfile.txt"
+23 
+24 # Ensure the output directory and log directory exist
+25 mkdir -p $OUTPUT_DIR
+26 mkdir -p $LOG_DIR
+27 
+28 # Redirect stderr to the log file
+29 exec 2>>"$LOG_FILE"
+30 
+31 source "$SCRIPT_DIR/helper/logger.sh"
+32 source "$SCRIPT_DIR/helper/log_helper.sh" && log_script_name
+33 source "$SCRIPT_DIR/generate_output/api.sh"
+34 # source "$SCRIPT_DIR/server/api.sh"
+35 # source "$SCRIPT_DIR/watch/api.sh"
+36 
+37 log "INFO" "sourced scripts in $SCRIPT_DIR"
+38 
+39 trap 'cleanup' SIGINT SIGTERM
+40 
+41 main() {
+42   refresh_output "$INPUT_DIR" 
+43 #   start_server
+44 #   start_watching_changes
+45    while true; do
+46 #     check_server_status
+47      sleep 1
+48    done
+49 }
+50 
+51 main
+52 
