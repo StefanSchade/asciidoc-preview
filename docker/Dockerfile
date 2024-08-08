@@ -19,22 +19,23 @@ RUN npm install -g livereloadx
 # Create a non-root user
 RUN useradd -ms /bin/bash containeruser
 
-# Create directories for mountpoints
+# Create directories for mountpoints and logs
 RUN mkdir -p /workspace/input 
 
 # Copy the sources to the container
 COPY ../src /workspace/src
 COPY ../scripts /workspace/scripts
 
-# Set the entrypoint script
-RUN find /workspace/src -name "*.sh" -exec chmod +x {} + && \
-    find /workspace/scripts -name "*.sh" -exec chmod + {} +
+# Give containeruser ownership and access to the workspace
+RUN chown -R containeruser:containeruser /workspace && \
+    chmod -R 755 /workspace
 
-# Set permissions
-RUN chown -R containeruser:containeruser /workspace/src /workspace/scripts /workspace/logs && \
-    chmod -R 755 /workspace/input
+# But make the input directory read only
+RUN chmod -R 755 /workspace/input && \
+    chown -R root:root /workspace/input
 
 USER containeruser
+
 WORKDIR /workspace
 
 # Use the entrypoint script

@@ -21,15 +21,11 @@ INPUT_DIR=/workspace/input
 LOG_DIR=/workspace/logs
 LOG_FILE="$LOG_DIR/logfile.txt"
 
-# Ensure the output directory and log directory exist
 mkdir -p $OUTPUT_DIR
 mkdir -p $LOG_DIR
+touch $LOG_FILE
 
-# Redirect stderr to the log file
-exec 2>>"$LOG_FILE"
-
-source "$SCRIPT_DIR/helper/logger.sh"
-source "$SCRIPT_DIR/helper/log_helper.sh" && log_script_name
+source "$SCRIPT_DIR/helper/log_script_name.sh" && log_script_name
 source "$SCRIPT_DIR/generate_output/api.sh"
 # source "$SCRIPT_DIR/server/api.sh"
 # source "$SCRIPT_DIR/watch/api.sh"
@@ -44,6 +40,7 @@ main() {
 #   start_watching_changes
    while true; do
 #     check_server_status
+     log "INFO" "executing loop"
      sleep 1
    done
 }

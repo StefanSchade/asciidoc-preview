@@ -22,6 +22,6 @@ if %ERRORLEVEL% neq 0 (
 
 cd ..
 set IMAGE_NAME=dev-environment
-docker build -n %IMAGE_NAME% -t %IMAGE_NAME% -f "docker/Dockerfile" .
-docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace dev-environment
+docker build -t %IMAGE_NAME% -f "docker/Dockerfile" .
+docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace dev-environment -name %IMAGE_NAME%
 cd scripts

@@ -43,7 +43,3 @@ log() {
     fi
  }
 
-# Set desired log level (e.g., INFO, DEBUG, ERROR)
-LOG_LEVEL="DEBUG"
-
-
