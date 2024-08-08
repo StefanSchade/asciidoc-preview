@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
 watch_changes() {
   local old_snapshot=()
   local new_snapshot=()
-  local dirs_to_handle=()
+  local -A dirs_to_handle=()
 
   generate_snapshot "$INPUT_DIR" old_snapshot
 
@@ -18,17 +18,22 @@ watch_changes() {
     generate_snapshot "$INPUT_DIR" new_snapshot
 
     log "INFO" "watch_changes: compare snapshots"
+    dirs_to_handle=()  # Ensure dirs_to_handle is reset before comparison
     compare_snapshots old_snapshot new_snapshot dirs_to_handle
 
-    if [ ${#dirs_to_handle[@]} -ne 0 ]; then
-      log "INFO" "Directories to handle: ${dirs_to_handle[*]}"
-      handle_changes "${dirs_to_handle[@]}"
+    # Convert keys to an indexed array
+    local keys=("${!dirs_to_handle[@]}")
+
+    log "DEBUG" "keys directly before conditional: ${keys[*]}"
+
+    if [ ${#keys[@]} -gt 0 ]; then  # Check if there are any keys
+      log "INFO" "Directories to handle: ${keys[*]}"  # Correctly log the keys
+      handle_changes "${keys[@]}"  # Correctly pass the keys
     else
       log "DEBUG" "No directories to handle."
     fi
 
     old_snapshot=("${new_snapshot[@]}")
-    dirs_to_handle=()  # Reset the array for the next comparison
   done
 }
 
