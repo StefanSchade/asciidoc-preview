@@ -11,6 +11,7 @@
 # 3. watch the INPUT_DIR for changes to the asciidoc files or directories
 #    and update the html.
 
+LOG_LEVEL=DEBUG
 
 # Get the directory of the currently executing script
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
