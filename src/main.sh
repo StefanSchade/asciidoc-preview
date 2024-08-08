@@ -15,34 +15,39 @@
 # Get the directory of the currently executing script
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
-# Define the input and output directories
+# Define the input apind output directories
 OUTPUT_DIR=/workspace/output
 INPUT_DIR=/workspace/input
 LOG_DIR=/workspace/logs
 LOG_FILE="$LOG_DIR/logfile.txt"
 
-mkdir -p $OUTPUT_DIR
-mkdir -p $LOG_DIR
-touch $LOG_FILE
+mkdir -p "$OUTPUT_DIR"
+mkdir -p "$LOG_DIR"
+touch "$LOG_FILE"
 
 source "$SCRIPT_DIR/helper/log_script_name.sh" && log_script_name
+source "$SCRIPT_DIR/helper/cleanup.sh"
 source "$SCRIPT_DIR/generate_output/api.sh"
-# source "$SCRIPT_DIR/server/api.sh"
-# source "$SCRIPT_DIR/watch/api.sh"
+source "$SCRIPT_DIR/livereload_server/api.sh"
+source "$SCRIPT_DIR/watch_changes/api.sh"
 
 log "INFO" "sourced scripts in $SCRIPT_DIR"
 
 trap 'cleanup' SIGINT SIGTERM
 
 main() {
-  refresh_output "$INPUT_DIR" 
-#   start_server
-#   start_watching_changes
-   while true; do
-#     check_server_status
-     log "INFO" "executing loop"
-     sleep 1
-   done
+  refresh_output "$INPUT_DIR"
+  
+  start_server &
+  LIVERELOAD_PID=$!
+
+  watch_changes &
+  WATCH_PID=$!
+
+  # Wait for background processes
+  wait $WATCH_PID
+  wait $LIVERELOAD_PID 
+
 }
 
 main
