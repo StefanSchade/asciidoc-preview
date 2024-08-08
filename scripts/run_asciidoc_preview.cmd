@@ -20,8 +20,19 @@ if %ERRORLEVEL% neq 0 (
     set DOCUMENT_DIR=%~dp0%DOCUMENT_DIR%
 )
 
+REM Sanitize the DOCUMENT_DIR to create a valid container name
+set SANITIZED_PATH=%DOCUMENT_DIR::=_% 
+set SANITIZED_PATH=%SANITIZED_PATH:\=_% 
+set SANITIZED_PATH=%SANITIZED_PATH:/=_% 
+
+REM Set the image name
+set IMAGE_NAME=asciidoc-preview
+
+REM Set the container name
+set CONTAINER_NAME=%IMAGE_NAME%_%SANITIZED_PATH%
+
 cd ..
-set IMAGE_NAME=dev-environment
 docker build -t %IMAGE_NAME% -f "docker/Dockerfile" .
-docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace dev-environment -name %IMAGE_NAME%
+docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace --name %CONTAINER_NAME% %IMAGE_NAME%
 cd scripts
+
