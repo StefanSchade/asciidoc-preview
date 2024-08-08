@@ -60,11 +60,10 @@ compare_snapshots() {
   # Add collected directories to the reference array
   for dir in "${!dirs_to_handle[@]}"; do
     log "DEBUG" "Adding directory to handle: $dir"
-    # dirs_to_handle_ref+=("$dir")
-    dirs_to_handle["$dir"]=1
+    dirs_to_handle_ref["$dir"]=1
     log "DEBUG" "Directories to handle in for loop key ${!dirs_to_handle_ref[@]} value ${dirs_to_handle_ref[@]}"
   done
 
-  log "DEBUG" "Directories to handle after comparison: ${dirs_to_handle_ref[*]}"
+  log "DEBUG" "Directories to handle after comparison: ${!dirs_to_handle_ref[@]}"
 }
 
