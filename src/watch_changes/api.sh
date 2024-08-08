@@ -23,9 +23,12 @@ watch_changes() {
     if [ ${#dirs_to_handle[@]} -ne 0 ]; then
       log "INFO" "Directories to handle: ${dirs_to_handle[*]}"
       handle_changes "${dirs_to_handle[@]}"
+    else
+      log "DEBUG" "No directories to handle."
     fi
 
     old_snapshot=("${new_snapshot[@]}")
+    dirs_to_handle=()  # Reset the array for the next comparison
   done
 }
 
@@ -33,6 +36,7 @@ watch_changes() {
 handle_changes() {
   local dirs=("$@")
   for dir in "${dirs[@]}"; do
+    log "INFO" "Handling changes in directory: $dir"
     partial_refresh_output "$dir"
   done
 }
