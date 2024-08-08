@@ -33,6 +33,6 @@ set CONTAINER_NAME=%IMAGE_NAME%_%SANITIZED_PATH%
 
 cd ..
 docker build -t %IMAGE_NAME% -f "docker/Dockerfile" .
-docker run -it --rm -v %DOCUMENT_DIR%:/workspace/output -w /workspace --name %CONTAINER_NAME% %IMAGE_NAME%
+docker run -it --rm -v %DOCUMENT_DIR%:/workspace/input -w /workspace --name %CONTAINER_NAME% %IMAGE_NAME%
 cd scripts
 

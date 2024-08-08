@@ -36,7 +36,10 @@ log "INFO" "sourced scripts in $SCRIPT_DIR"
 trap 'cleanup' SIGINT SIGTERM
 
 main() {
-  refresh_output "$INPUT_DIR"
+
+  # initially process the whole input directory
+  # by using a path relative to the INPUT_DIR
+  refresh_output "."
   
   start_server &
   LIVERELOAD_PID=$!

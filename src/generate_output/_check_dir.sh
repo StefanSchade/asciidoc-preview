@@ -4,9 +4,9 @@
 check_dir() {
     local input_dir=$1
     if [ -d "$input_dir" ]; then
-        echo "$input_dir exists." >&2
+        log "INFO" "$input_dir exists."
     else
-        echo "$input_dir does not exist." >&2
+        log "ERROR" "$input_dir does not exist."
         exit 1
     fi
 }
