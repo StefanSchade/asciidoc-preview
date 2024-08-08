@@ -28,7 +28,7 @@ touch "$LOG_FILE"
 source "$SCRIPT_DIR/helper/log_script_name.sh" && log_script_name
 source "$SCRIPT_DIR/helper/cleanup.sh"
 source "$SCRIPT_DIR/generate_output/api.sh"
-source "$SCRIPT_DIR/livereload_server/api.sh"
+source "$SCRIPT_DIR/livereloadx_server/api.sh"
 source "$SCRIPT_DIR/watch_changes/api.sh"
 
 log "INFO" "sourced scripts in $SCRIPT_DIR"
@@ -41,8 +41,7 @@ main() {
   # by using a path relative to the INPUT_DIR
   refresh_output "."
   
-  start_server &
-  LIVERELOAD_PID=$!
+  start_server 
 
   watch_changes &
   WATCH_PID=$!
