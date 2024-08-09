@@ -17,21 +17,16 @@ watch_changes() {
     generate_snapshot "$INPUT_DIR" new_snapshot
 
     log "INFO" "watch_changes: compare snapshots"
-    local -A dirs_to_handle=()
+    local dirs_to_handle=()
     compare_snapshots old_snapshot new_snapshot dirs_to_handle 
-   
-    log "INFO" "Number of  found: ${#dirs_to_handle[@]}"
-    log "DEBUG" "abcDirectories to handle after comparison: ${!dirs_to_handle[@]}"
-    log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 
-    # Convert keys to an indexed array
-    local keys=("${!dirs_to_handle[@]}")
+    log "INFO" "Number of directories found: ${#dirs_to_handle[@]}"
+    log "DEBUG" "Directories to handle after comparison: ${dirs_to_handle[*]}"
 
-    log "DEBUG" "keys directly before conditional: ${keys[*]}"
 
-    if [ ${#keys[@]} -gt 0 ]; then  # Check if there are any keys
-      log "INFO" "Directories to handle: ${keys[*]}"  # Correctly log the keys
-      handle_changes "${keys[@]}"  # Correctly pass the keys
+    if [ ${#dirs_to_handle[@]} -gt 0 ]; then  # Check if there are any keys
+      log "INFO" "Directories to handle: ${dirs_to_handle[*]}"  # Correctly log the keys
+      handle_changes "${dirs_to_handle[@]}"  # Correctly pass the keys
     else
       log "DEBUG" "No directories to handle."
     fi
@@ -48,3 +43,4 @@ handle_changes() {
     partial_refresh_output "$dir"
   done
 }
+
