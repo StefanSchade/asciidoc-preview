@@ -8,7 +8,6 @@ source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
 watch_changes() {
   local old_snapshot=()
   local new_snapshot=()
-  local -A dirs_to_handle=()
 
   generate_snapshot "$INPUT_DIR" old_snapshot
 
@@ -18,8 +17,12 @@ watch_changes() {
     generate_snapshot "$INPUT_DIR" new_snapshot
 
     log "INFO" "watch_changes: compare snapshots"
-    dirs_to_handle=()  # Ensure dirs_to_handle is reset before comparison
-    compare_snapshots old_snapshot new_snapshot dirs_to_handle
+    local -A dirs_to_handle=()
+    compare_snapshots old_snapshot new_snapshot dirs_to_handle 
+   
+    log "INFO" "Number of  found: ${#dirs_to_handle[@]}"
+    log "DEBUG" "abcDirectories to handle after comparison: ${!dirs_to_handle[@]}"
+    log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 
     # Convert keys to an indexed array
     local keys=("${!dirs_to_handle[@]}")
@@ -45,4 +48,3 @@ handle_changes() {
     partial_refresh_output "$dir"
   done
 }
-
