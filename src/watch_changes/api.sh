@@ -3,6 +3,7 @@
 # Source necessary helper scripts
 source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
+source "$SCRIPT_DIR/helper/input_path_to_relative_path.sh"
 
 # Function to start watching for changes
 watch_changes() {
@@ -40,7 +41,12 @@ handle_changes() {
   local dirs=("$@")
   for dir in "${dirs[@]}"; do
     log "INFO" "Handling changes in directory: $dir"
-    partial_refresh_output "$dir"
+
+    # refresh_output $(input_path_to_relative_path "$absolute_path")
+    # to simplify the algorithm any change will lead to a complete refresh
+    # unless I discover problems using the tool simplicity seems more
+    # important than efficiency
+    refresh_output . 
   done
 }
 
