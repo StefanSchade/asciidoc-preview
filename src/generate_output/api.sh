@@ -34,13 +34,19 @@ refresh_output() {
     # results in an error. the more explicit form does not
     find_subdir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0)
     handle_potential_errors $? "Error during find subdirs"
-    find_subdir_output_translated=$(echo "$find_subdir_output" | tr '\0' '\n') # translate null separated to new line sep
-    log "INFO" "find_subdir_output $(find_subdir_output_translated)"
-    echo "$find_subdir_output_translated" | while IFS= read -r dir; do
+
+    # Translate null-separated to newline-separated for logging
+    find_subdir_output_translated=$(echo "$find_subdir_output" | tr '\0' '\n')
+    find_subdir_output_visible=$(echo "$find_subdir_output" | od -An -t x1 | tr ' ' '\n') 
+    log "INFO" "find_subdir_output_visible $(find_subdir_output_visible)"
+    log "INFO" "find_subdir_output $(find_subdir_output)"
+    log "INFO" "find_subdir_output_translated $(find_subdir_output_translated)"
+    # echo "$find_subdir_output" | while IFS= read -d $'\0' dir; do
+    find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | while IFS= read -d $'\0' dir; do
       log "INFO" "removing $dir"
       rm -rf "$dir"
       handle_potential_errors $? "Error removing directory $dir"
-      done
+    done
   else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
     mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
