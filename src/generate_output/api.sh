@@ -20,8 +20,8 @@ refresh_output() {
   local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
   local absolute_output_start_path="${OUTPUT_DIR}/${relative_start_path}"
 
-  sanitized_absolute_input_start_path=$(sanitize_path "$absolute_input_start_path")
-  sanitized_absolute_output_start_path=$(sanitize_path "$absolute_output_start_path")
+  absolute_input_start_path=$(sanitize_path "$absolute_input_start_path")
+  absolute_output_start_path=$(sanitize_path "$absolute_output_start_path")
 
   log "INFO" "Absolute input start path $absolute_input_start_path"
   log "INFO" "Absolute output start path $absolute_output_start_path"
@@ -33,7 +33,7 @@ refresh_output() {
     log "INFO" "Directory $absolute_output_start_path exists - proceeding to remove contents"
     ls_output=$(ls -la "$absolute_output_start_path")
     log_comand_output "INFO" "$ls_output"
-    rm_output=$(rm -rf "$sanitized_absolute_output_start_path" 2>&1)
+    rm_output=$(rm -rf "$absolute_output_start_path" 2>&1)
     log_command_output "INFO" "$rm_output"
   fi
   
@@ -62,8 +62,9 @@ refresh_output() {
     mkdir -p "$OUTPUT_DIR/$subdir"
     find_ls_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -print -exec ls -l {} \; 2>&1)
     log_command_output "INFO" "$find_ls_output"
-    find_asciidoctor_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -exec asciidoctor -D "$OUTPUT_DIR/$subdir" {} \; 2>&1)
-    log_command_output "INFO" "$find_asciidoctor_output"
+    find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
+      (cd "$INPUT_DIR/$subdir" && asciidoctor -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
+    done
   done
   generate_all_indexes "$relative_start_path"
 }
