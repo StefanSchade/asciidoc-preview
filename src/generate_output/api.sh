@@ -24,27 +24,33 @@ refresh_output() {
     # index.html will be overwritten later on - removing it here would disrupt the live update
     log "INFO" "refreshing directory $absolute_output_start_path, cleaning existing html files and subdirs"
     find_html_output=$(find "$absolute_output_start_path" -name "*.html" -not -name "index.html" -exec rm -f {} \; 2>&1)
-    log_command_output "INFO" "find html $find_html_output"
-    find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
-    log_command_output "INFO" "find dirs $find_dir_output"
- else
+    handle_potential_errors $? "Error during find html $find_html_output"
+
+    ls_output=$(ls -la $absolute_output_start_path)
+    log_command_output "INFO" "directory content to be cleaned $ls_output"
+     
+    # A find statement equivalent to the last code block
+    # find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
+    # results in an error. the more explicit form does not
+    find_subdir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0)
+    handle_potential_errors $? "Error during find subdirs"
+    find_subdir_output_translated=$(echo "$find_subdir_output" | tr '\0' '\n') # translate null separated to new line sep
+    log "INFO" "find_subdir_output $(find_subdir_output_translated)"
+    echo "$find_subdir_output_translated" | while IFS= read -r dir; do
+      log "INFO" "removing $dir"
+      rm -rf "$dir"
+      handle_potential_errors $? "Error removing directory $dir"
+      done
+  else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
     mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
-    mkdir_exit_status=$?
-    log_command_output "INFO" "mkdir $mkdir_command_output"
-    if [ $mkdir_exit_status -ne 0]; then
-       log "ERROR" "Error creating directory"
-       exit 1
-    fi
+    handle_potential_errors $? "Error creating directory $mkdir_command_output"
   fi
 
   # searching for directories containing *.adoc files below the current dir
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
-  if [ $? -ne 0 ]; then
-    log "ERROR" "Error finding adoc directories $relative_start_path"
-    exit 1
-  fi
+  handle_potenital_errors $? "Error finding adoc directories $relative_start_path"
   log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
   log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 

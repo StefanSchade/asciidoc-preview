@@ -58,3 +58,16 @@ log_command_output() {
     done <<< "$command_output"
 }
 
+# Function to handle a potential error while minimizing boilerplate
+# code.
+# Example usage: Log the output of a command
+# comand_that_can_fail "$context_information"
+# handle_potenital_errors $? "Error executing command_that_can_fail $context_information"
+handle_potential_errors() {
+    local status=$1
+    local message=$2
+    if [ $status -ne 0 ]; then
+        log "ERROR" "$message"
+        exit $status
+    fi
+}
