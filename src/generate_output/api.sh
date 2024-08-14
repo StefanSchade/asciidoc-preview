@@ -28,20 +28,20 @@ refresh_output() {
 
   check_dir "$absolute_input_start_path" # make sure directory exits
   
-  log "INFO" "cleaning directory $absolute_output_start_path of previous files..." 
-  if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "Directory $absolute_output_start_path exists - proceeding to remove contents"
-    ls_output=$(ls -la "$absolute_output_start_path")
-    log_comand_output "INFO" "$ls_output"
-    rm_output=$(rm -rf "$absolute_output_start_path" 2>&1)
-    log_command_output "INFO" "$rm_output"
-  fi
+#  log "INFO" "cleaning directory $absolute_output_start_path of previous files..." 
+#  if [ -d "$absolute_output_start_path" ]; then
+#    log "INFO" "Directory $absolute_output_start_path exists - proceeding to remove contents"
+#    ls_output=$(ls -la "$absolute_output_start_path")
+#    log_command_output "INFO" "$ls_output"
+#    rm_output=$(rm -rf "$absolute_output_start_path" 2>&1)
+#    log_command_output "INFO" "$rm_output"
+#  fi
   
   # It turns out the output path sometimes can not be removed completely - in this case we
   # remove the contents file by file and subdir by subdir
   if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "Failed to remove $absolute_output_start_path, cleaning files and subdirs"
-    find_html_output=$(find "$absolute_output_start_path" -maxdepth 1 -name "*.html" -exec rm -f {} \; 2>&1)
+    log "INFO" "refreshing directory $absolute_output_start_path, cleaning html files and subdirs"
+    find_html_output=$(find "$absolute_output_start_path" -name "*.html" -not -name "index.html" -exec rm -f {} \; 2>&1)
     log_command_output "INFO" "find html $find_html_output"
     find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
     log_command_output "INFO" "find dirs $find_dir_output"
