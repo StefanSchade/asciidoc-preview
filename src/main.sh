@@ -32,6 +32,7 @@ source "$SCRIPT_DIR/generate_output/api.sh"
 source "$SCRIPT_DIR/livereloadx_server/api.sh"
 source "$SCRIPT_DIR/watch_changes/api.sh"
 
+log "INFO" "running script in directory $(pwd)"
 log "INFO" "sourced scripts in $SCRIPT_DIR"
 
 trap 'cleanup' SIGINT SIGTERM

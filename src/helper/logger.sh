@@ -19,6 +19,7 @@
 MAX_SIZE=$((6 * 1024 * 1024))           # 6 MB
 THRESHOLD_SIZE=$((5 * 1024 * 1024))     # 5 MB
 
+# log function
 log() {
     local level=$1
     shift
@@ -42,4 +43,18 @@ log() {
         echo "Log file trimmed to $THRESHOLD_SIZE bytes." >&2
     fi
  }
+
+# Function to log the output of a command line by line
+# Example usage: Log the output of ls command
+# log "INFO" "Logging the output of ls command"
+# ls_output=$(ls -la /workspace/output)
+# log_command_output "INFO" "$ls_output"
+log_command_output() {
+    local level=$1
+    shift
+    local command_output="$@"
+    while IFS= read -r line; do
+        log "$level" "$line"
+    done <<< "$command_output"
+}
 

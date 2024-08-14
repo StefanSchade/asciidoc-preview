@@ -4,35 +4,52 @@ source "$SCRIPT_DIR/generate_output/_check_dir.sh"
 source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
 source "$SCRIPT_DIR/generate_output/_generate_index.sh"
 
+
+sanitize_path() {
+    local path=$1
+    # Remove trailing /. or /./
+    path="${path%.}"
+    path="${path%./}"
+    echo "$path"
+}
+
+
 refresh_output() {
 
   local relative_start_path=$1
   local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
   local absolute_output_start_path="${OUTPUT_DIR}/${relative_start_path}"
 
-  echo "Current working directory $(pwd)" >&2
-  echo "Absolute input start path $absolute_input_start_path" >&2
-  echo "Absolute output start path $absolute_output_start_path" >&2
+  sanitized_absolute_input_start_path=$(sanitize_path "$absolute_input_start_path")
+  sanitized_absolute_output_start_path=$(sanitize_path "$absolute_output_start_path")
+
+  log "INFO" "Absolute input start path $absolute_input_start_path"
+  log "INFO" "Absolute output start path $absolute_output_start_path"
 
   check_dir "$absolute_input_start_path" # make sure directory exits
   
-  log "INFO" "cleaning directory $absolute_output_start_path of previous files..."
-  cd /workspace
-  
+  log "INFO" "cleaning directory $absolute_output_start_path of previous files..." 
   if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "Directory $absolute_output_start_path exists before removal. Contents:"
-    ls -la "$absolute_output_start_path"
+    log "INFO" "Directory $absolute_output_start_path exists - proceeding to remove contents"
+    ls_output=$(ls -la "$absolute_output_start_path")
+    log_comand_output "INFO" "$ls_output"
+    rm_output=$(rm -rf "$sanitized_absolute_output_start_path" 2>&1)
+    log_command_output "INFO" "$rm_output"
   fi
   
-  rm -rf "$absolute_output_start_path"
-
+  # It turns out the output path sometimes can not be removed completely - in this case we
+  # remove the contents file by file and subdir by subdir
   if [ -d "$absolute_output_start_path" ]; then
-    log "ERROR" "Failed to remove $absolute_output_start_path"
-  else
-    log "INFO" "Successfully removed $absolute_output_start_path"
+    log "INFO" "Failed to remove $absolute_output_start_path, cleaning files and subdirs"
+    find_html_output=$(find "$absolute_output_start_path" -maxdepth 1 -name "*.html" -exec rm -f {} \; 2>&1)
+    log_command_output "INFO" "find html $find_html_output"
+    find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
+    log_command_output "INFO" "find dirs $find_dir_output"
+ else
+    log "INFO" "Successfully removed $absolute_output_start_path - replace it by a fresh directory"
+    mkdir -p "$absolute_output_start_path"
   fi
 
-  mkdir -p "$absolute_output_start_path"
 
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
@@ -43,8 +60,10 @@ refresh_output() {
   for subdir in "${adoc_dir_array[@]}"; do
     log "INFO" "Processing dir $subdir "
     mkdir -p "$OUTPUT_DIR/$subdir"
-    find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -print -exec ls -l {} \;
-    find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -exec asciidoctor -D "$OUTPUT_DIR/$subdir" {} \;
+    find_ls_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -print -exec ls -l {} \; 2>&1)
+    log_command_output "INFO" "$find_ls_output"
+    find_asciidoctor_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -exec asciidoctor -D "$OUTPUT_DIR/$subdir" {} \; 2>&1)
+    log_command_output "INFO" "$find_asciidoctor_output"
   done
   generate_all_indexes "$relative_start_path"
 }
