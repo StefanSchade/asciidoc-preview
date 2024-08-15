@@ -34,15 +34,7 @@ refresh_output() {
     # results in an error. the more explicit form does not
     find_subdir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | tr '\0' '\n')
     handle_potential_errors $? "Error during find subdirs"
-
-    # Translate null-separated to newline-separated for logging
-    #find_subdir_output_translated=$(echo "$find_subdir_output" | tr '\0' '\n')
-    #find_subdir_output_visible=$(echo "$find_subdir_output" | od -An -t x1 | tr ' ' '\n') 
-    #log "INFO" "find_subdir_output_visible $(find_subdir_output_visible)"
-    log "INFO" "find_subdir_output $(find_subdir_output)"
-    #log "INFO" "find_subdir_output_translated $(find_subdir_output_translated)"
-     echo "$find_subdir_output" | while IFS= read -d $'\n' dir; do
-    # find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | while IFS= read -d $'\0' dir; do
+    echo "$find_subdir_output" | while IFS= read -d $'\n' dir; do
       log "INFO" "removing $dir"
       rm -rf "$dir"
       handle_potential_errors $? "Error removing directory $dir"

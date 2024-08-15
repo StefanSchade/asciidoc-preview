@@ -13,7 +13,7 @@ watch_changes() {
   generate_snapshot "$INPUT_DIR" old_snapshot
 
   while true; do
-    sleep 3
+    sleep 5
     log "INFO" "watch_changes: generate new snapshot"
     generate_snapshot "$INPUT_DIR" new_snapshot
 
