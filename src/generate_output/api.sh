@@ -59,7 +59,7 @@ refresh_output() {
     find_ls_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -print -exec ls -l {} \; 2>&1)
     log_command_output "INFO" "$find_ls_output"
     find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
-      (cd "$INPUT_DIR/$subdir" && asciidoctor -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
+      (cd "$INPUT_DIR/$subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
     done
   done
   generate_all_indexes "$relative_start_path"
