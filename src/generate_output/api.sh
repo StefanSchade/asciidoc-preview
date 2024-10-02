@@ -1,11 +1,18 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 source "$SCRIPT_DIR/generate_output/_check_dir.sh"
 source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
 source "$SCRIPT_DIR/generate_output/_generate_index.sh"
 source "$SCRIPT_DIR/helper/sanitize_path.sh"
+source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
 
 refresh_output() {
+
+  log "INFO" "inside refresh output"
 
   local relative_start_path=$1
   local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
@@ -31,13 +38,27 @@ refresh_output() {
      
     # A find statement equivalent to the last code block
     # find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
-    # results in an error. the more explicit form does not
+    # results in an error as the parent directory might already have been removed before. therefore we switch to this form
     find_subdir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | tr '\0' '\n')
     handle_potential_errors $? "Error during find subdirs"
-    echo "$find_subdir_output" | while IFS= read -d $'\n' dir; do
-      log "INFO" "removing $dir"
-      rm -rf "$dir"
-      handle_potential_errors $? "Error removing directory $dir"
+    echo "$find_subdir_output" | while IFS= read -d $'\n' outdir; do
+      if [ -n "$outdir" ]; then  # Add a check to ensure $dir is not empty
+         relative_output_path=$(output_path_to_relative_path "$outdir")
+         if [ -n "$relative_output_path" ]; then
+            indir="${INPUT_DIR}/$relative_output_path"
+         else
+            log "ERROR" "Could not determine relative output path for $outdir"
+            exit 1
+         fi
+            log "INFO" "checking if directory $indir should be removed"
+         if check_dir "$indir"; then
+            log "INFO" "directory $indir exists - skip removal of $outdir"
+         else
+            log "INFO" "directory $indir does not exist anymore - removing $outdir"
+            rm -rf "$outdir"
+         fi
+         handle_potential_errors $? "Error removing directory $outdir"
+      fi
     done
   else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
@@ -48,7 +69,7 @@ refresh_output() {
   # searching for directories containing *.adoc files below the current dir
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
-  handle_potenital_errors $? "Error finding adoc directories $relative_start_path"
+  handle_potential_errors $? "Error finding adoc directories $relative_start_path"
   log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
   log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 

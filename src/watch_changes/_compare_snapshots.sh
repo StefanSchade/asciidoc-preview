@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 compare_snapshots() {
   local -n old_snap=$1
   local -n new_snap=$2

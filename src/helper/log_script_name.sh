@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 source "$SCRIPT_DIR/helper/logger.sh"
 
 log_script_name() {

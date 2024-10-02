@@ -12,6 +12,9 @@
 # log "DEBUG" "This is a debug message."
 # log "INFO" "The log function" "can take" "multiple messages" "at once"
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
 
 : "${LOG_FILE:=/var/log/default_log_file.log}"    # default path if not set externally
 : "${LOG_LEVEL:=INFO}"                            # default log level if not set ext.

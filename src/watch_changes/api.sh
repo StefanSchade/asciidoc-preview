@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 # Source necessary helper scripts
 source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
-source "$SCRIPT_DIR/helper/input_path_to_relative_path.sh"
+source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
 
 # Function to start watching for changes
 watch_changes() {

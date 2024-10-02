@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 # Function to check if the input directory is correctly mounted
 check_dir() {
     local input_dir=$1

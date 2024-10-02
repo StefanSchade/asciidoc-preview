@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 source "$SCRIPT_DIR/livereloadx_server/_check_server_status.sh"
 
 start_server() {
