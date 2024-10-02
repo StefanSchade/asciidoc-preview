@@ -2,7 +2,7 @@
 
 # Enable strict mode
 set -euxo pipefail
-IFS=$'\n\t'
+# IFS=$'\n\t'
 
 generate_snapshot() {
   local dir=$1
