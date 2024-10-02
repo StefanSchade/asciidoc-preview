@@ -48,7 +48,7 @@ refresh_output() {
   # searching for directories containing *.adoc files below the current dir
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
-  handle_potenital_errors $? "Error finding adoc directories $relative_start_path"
+  handle_potential_errors $? "Error finding adoc directories $relative_start_path"
   log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
   log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 
