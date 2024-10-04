@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 find_adoc_dirs() {
   local relative_start_path="$1"
   local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"

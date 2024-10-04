@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 list_all_output_dirs() {
   find "$OUTPUT_DIR" -type d
 }

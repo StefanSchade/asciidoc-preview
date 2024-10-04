@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 # author: Stefan Schade
 #
 # description:
@@ -32,6 +36,7 @@ source "$SCRIPT_DIR/generate_output/api.sh"
 source "$SCRIPT_DIR/livereloadx_server/api.sh"
 source "$SCRIPT_DIR/watch_changes/api.sh"
 
+log "INFO" "start logging"
 log "INFO" "running script in directory $(pwd)"
 log "INFO" "sourced scripts in $SCRIPT_DIR"
 
@@ -41,6 +46,7 @@ main() {
 
   # initially process the whole input directory
   # by using a path relative to the INPUT_DIR
+  log "INFO" "calling refresh outupt"
   refresh_output "."
   
   start_server 

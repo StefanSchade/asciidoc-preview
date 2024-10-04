@@ -1,32 +1,30 @@
 #!/bin/bash
 
-# description:
-# this tool helps to perform logging from bash scripts. It has the following
-# features
-# - provide log levels
-# - limit the logfile size by roling
-#
-# usage:
-# log "INFO" "This is an info message."
-# log "ERROR" "This is an error message."
-# log "DEBUG" "This is a debug message."
-# log "INFO" "The log function" "can take" "multiple messages" "at once"
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
 
-
-: "${LOG_FILE:=/var/log/default_log_file.log}"    # default path if not set externally
-: "${LOG_LEVEL:=INFO}"                            # default log level if not set ext.
+# Set default values if the variables are not provided
+: "${LOG_FILE:=/var/log/default_log_file.log}"    # Default log file
+: "${LOG_LEVEL:=INFO}"                            # Default log level
 
 MAX_SIZE=$((6 * 1024 * 1024))           # 6 MB
 THRESHOLD_SIZE=$((5 * 1024 * 1024))     # 5 MB
 
-# log function
+# Ensure the log file exists
+touch "$LOG_FILE"
+
+# Log function
 log() {
-    local level=$1
+    local level="${1//[[:space:]]/}"  # Remove any spaces from the log level argument
     shift
-    local message=$@
+    local message="$*"
     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
 
+    # Define log levels
     declare -A levels=( ["ERROR"]=0 ["WARN"]=1 ["INFO"]=2 ["DEBUG"]=3 )
+
+    # Check if the log level allows logging this message
     if (( ${levels[$level]} <= ${levels[$LOG_LEVEL]} )); then
         echo "$timestamp [$level] $message" >> "$LOG_FILE"
     fi
@@ -37,37 +35,8 @@ log() {
         echo "Log file size exceeded $MAX_SIZE bytes, rotating log file." >&2
         local temp_file=$(mktemp)
 
-        tail -c $THRESHOLD_SIZE "$LOG_FILE" > "$temp_file" && cat "$temp_file" > "$LOG_FILE"
-        truncate -s $THRESHOLD_SIZE "$LOG_FILE"
-        rm "$temp_file"
+        # Rotate the log file, keeping only the last THRESHOLD_SIZE bytes
+        tail -c $THRESHOLD_SIZE "$LOG_FILE" > "$temp_file" && mv "$temp_file" "$LOG_FILE"
         echo "Log file trimmed to $THRESHOLD_SIZE bytes." >&2
-    fi
- }
-
-# Function to log the output of a command line by line
-# Example usage: Log the output of ls command
-# log "INFO" "Logging the output of ls command"
-# ls_output=$(ls -la /workspace/output)
-# log_command_output "INFO" "$ls_output"
-log_command_output() {
-    local level=$1
-    shift
-    local command_output="$@"
-    while IFS= read -r line; do
-        log "$level" "$line"
-    done <<< "$command_output"
-}
-
-# Function to handle a potential error while minimizing boilerplate
-# code.
-# Example usage: Log the output of a command
-# comand_that_can_fail "$context_information"
-# handle_potenital_errors $? "Error executing command_that_can_fail $context_information"
-handle_potential_errors() {
-    local status=$1
-    local message=$2
-    if [ $status -ne 0 ]; then
-        log "ERROR" "$message"
-        exit $status
     fi
 }

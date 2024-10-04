@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
 cleanup() {
     echo "Cleaning up..."
     # Terminate the watch process
