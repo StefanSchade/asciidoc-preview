@@ -8,7 +8,9 @@ compare_snapshots() {
   local -n old_snap=$1
   local -n new_snap=$2
   local -n dirs_to_handle_ref=$3
+  local -n files_to_handle_ref=$4  # Added to track file changes
   local -A unique_dirs=()
+  local -A unique_files=()
 
   local old_dirs=$(printf "%s\n" "${old_snap[@]}" | grep '^D' | sort)
   local new_dirs=$(printf "%s\n" "${new_snap[@]}" | grep '^D' | sort)
@@ -35,13 +37,13 @@ compare_snapshots() {
   # Check for removed files
   comm -23 <(echo "$old_files") <(echo "$new_files") | while read -r line; do
     log "DEBUG" "Found removed file: $line"
-    unique_dirs["$(dirname "$(echo "$line" | cut -d' ' -f3-)")"]=1
+    unique_files["$(echo "$line" | cut -d' ' -f3-)"]=1  # Track file changes separately
   done
 
   # Check for added files
   comm -13 <(echo "$old_files") <(echo "$new_files") | while read -r line; do
     log "DEBUG" "Found added file: $line"
-    unique_dirs["$(dirname "$(echo "$line" | cut -d' ' -f3-)")"]=1
+    unique_files["$(echo "$line" | cut -d' ' -f3-)"]=1  # Track file changes separately
   done
 
   # Check for timestamp changes in existing directories
@@ -58,8 +60,9 @@ compare_snapshots() {
     fi
   done <<< "$old_dirs"
 
-  # Debugging: Print contents of unique_dirs
-  log "DEBUG" "Contents of unique_dirs KEY ${!unique_dirs[@]} VALUE ${unique_dirs[@]}"
+  # Debugging: Print contents of unique_dirs and unique_files
+  log "DEBUG" "Contents of unique_dirs: ${!unique_dirs[@]}"
+  log "DEBUG" "Contents of unique_files: ${!unique_files[@]}"
 
   # Add collected directories to the reference array
   for dir in "${!unique_dirs[@]}"; do
@@ -67,5 +70,13 @@ compare_snapshots() {
     dirs_to_handle_ref+=("$dir")
   done
 
+  # Add collected files to the reference array
+  for file in "${!unique_files[@]}"; do
+    log "DEBUG" "Adding file to handle: $file"
+    files_to_handle_ref+=("$file")
+  done
+
   log "DEBUG" "Directories to handle after comparison: ${dirs_to_handle_ref[*]}"
+  log "DEBUG" "Files to handle after comparison: ${files_to_handle_ref[*]}"
 }
+
