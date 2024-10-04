@@ -45,12 +45,18 @@ handle_changes() {
   local dirs=("$@")
   for dir in "${dirs[@]}"; do
     log "INFO" "Handling changes in directory: $dir"
-
+    relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+    if [ -n "$relative_path" ]; then
+      refresh_output "$relative_path"  # Refresh only the specific directory
+    else
+      log "ERROR" "Could not determine relative path for $dir, skipping."
+    fi
+  done
     # refresh_output $(input_path_to_relative_path "$absolute_path")
     # to simplify the algorithm any change will lead to a complete refresh
     # unless I discover problems using the tool simplicity seems more
     # important than efficiency
-    refresh_output . 
-  done
+  #  refresh_output . 
+  #done
 }
 

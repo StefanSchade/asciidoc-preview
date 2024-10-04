@@ -2,7 +2,7 @@
 .env
 zscaler.crt
 
-./tmp/*
+tmp/*
 
 repo.txt
 new_repo.txt

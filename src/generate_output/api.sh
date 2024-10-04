@@ -4,7 +4,7 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
-source "$SCRIPT_DIR/generate_output/_check_dir.sh"
+source "$SCRIPT_DIR/generate_output/_check_existence.sh"
 source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
 source "$SCRIPT_DIR/generate_output/_generate_index.sh"
 source "$SCRIPT_DIR/helper/sanitize_path.sh"
@@ -34,8 +34,21 @@ refresh_output() {
 
 
   if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "refreshing directory $absolute_output_start_path, cleaning existing html files and subdirs"
-    # index.html of the start dir excluded as it will be overwritten later - removing it early would disturb the live update
+    log "INFO" "refreshing directory $absolute_output_start_path, cleaning html files that do not exist anymore"
+  find "$absolute_output_start_path" -name "*.html" -not -name "index.html" | while IFS= read -r html_file; do
+    # Determine the relative path of the HTML file in the input directory
+    relative_html_path=$(output_path_to_relative_path "$html_file")
+    input_file="${INPUT_DIR}/${relative_html_path%.html}.adoc"
+    # Check if the corresponding .adoc file still exists
+    if check_file "$input_file"; then
+        log "INFO" "$input_file exists - keep $html_file"
+    else
+        log "INFO" "$input_file does not exist anymore - removing $html_file"
+        rm -f "$html_file"
+    fi
+  done
+
+# index.html of the start dir excluded as it will be overwritten later - removing it early would disturb the live update
     find_html_output=$(find "$absolute_output_start_path" -name "*.html" -not -name "index.html" -exec rm -f {} \; 2>&1)
     if [[ $? -ne 0 ]]; then
        log "ERROR" "no file found in ${absolute_output_start_path}, but that is not an error"
@@ -46,7 +59,7 @@ refresh_output() {
     if [[ $? -eq 0 ]]; then
        log "INFO" "directory content: $ls_output"
     else
-       log "ERROR" "Error listening directory content: $ls_output"
+       mog "ERROR" "Error listening directory content: $ls_output"
     fi
 
     # find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
