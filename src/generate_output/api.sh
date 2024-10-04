@@ -34,20 +34,24 @@ refresh_output() {
 
 
   if [ -d "$absolute_output_start_path" ]; then
-    # index.html will be overwritten later on - removing it here would disrupt the live update
     log "INFO" "refreshing directory $absolute_output_start_path, cleaning existing html files and subdirs"
+    # index.html of the start dir excluded as it will be overwritten later - removing it early would disturb the live update
     find_html_output=$(find "$absolute_output_start_path" -name "*.html" -not -name "index.html" -exec rm -f {} \; 2>&1)
-    handle_potential_errors $? "Error during find html $find_html_output"
+    if [[ $? -ne 0 ]]; then
+       log "ERROR" "no file found in ${absolute_output_start_path}, but that is not an error"
+    fi
 
-    ls_output=$(ls -la $absolute_output_start_path)
-    log_command_output "INFO" "directory content to be cleaned $ls_output"
-     
-    # A find statement equivalent to the last code block
+    # remove later as this did just contribute to the debugging durign development
+    ls_output=$(ls -la "$absolute_output_start_path" 2>&1)
+    if [[ $? -eq 0 ]]; then
+       log "INFO" "directory content: $ls_output"
+    else
+       log "ERROR" "Error listening directory content: $ls_output"
+    fi
+
     # find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
     # results in an error as the parent directory might already have been removed before. therefore we switch to this form
-    find_subdir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | tr '\0' '\n')
-    handle_potential_errors $? "Error during find subdirs"
-    echo "$find_subdir_output" | while IFS= read -d $'\n' outdir; do
+    find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | tr '\0' '\n' | while IFS= read -d $'\n' outdir; do
       if [ -n "$outdir" ]; then  # Add a check to ensure $dir is not empty
          relative_output_path=$(output_path_to_relative_path "$outdir")
          if [ -n "$relative_output_path" ]; then
@@ -63,19 +67,16 @@ refresh_output() {
             log "INFO" "directory $indir does not exist anymore - removing $outdir"
             rm -rf "$outdir"
          fi
-         handle_potential_errors $? "Error removing directory $outdir"
       fi
     done
   else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
     mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
-    handle_potential_errors $? "Error creating directory $mkdir_command_output"
   fi
 
   # searching for directories containing *.adoc files below the current dir
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
-  handle_potential_errors $? "Error finding adoc directories $relative_start_path"
   log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
   log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
 
@@ -83,8 +84,6 @@ refresh_output() {
   for subdir in "${adoc_dir_array[@]}"; do
     log "INFO" "Processing dir $subdir "
     mkdir -p "$OUTPUT_DIR/$subdir"
-    find_ls_output=$(find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" -print -exec ls -l {} \; 2>&1)
-    log_command_output "INFO" "$find_ls_output"
     find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
       (cd "$INPUT_DIR/$subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
     done

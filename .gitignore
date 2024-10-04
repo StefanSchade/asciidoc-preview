@@ -2,6 +2,8 @@
 .env
 zscaler.crt
 
+./tmp/*
+
 repo.txt
 new_repo.txt
 
