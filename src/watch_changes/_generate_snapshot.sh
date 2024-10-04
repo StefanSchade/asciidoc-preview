@@ -19,9 +19,11 @@ generate_snapshot() {
     else
       echo "Warning: '$entry' does not exist or is neither a file nor a directory, skipping..." >&2
     fi
-  done < <(find "$dir" -type f \( -name '*.adoc' -o -name '*.asciidoc' \)                           \
-                       -exec dirname {} \; | sort -u | xargs -I {} find {} \(                       \ 
-                       -type d -o -type f \( -name '*.adoc' -o -name '*.asciidoc' \) \) -print0)
-  log "DEBUG" "Snapshot for $dir: ${snapshot[*]}"
+    done < <(find "$dir" -type f \( -name '*.adoc' -o -name '*.asciidoc' \) \
+                         -exec dirname {} \; | sort -u | \
+                         xargs -I {} find {} \( -type d -o -type f \
+                         \( -name '*.adoc' -o -name '*.asciidoc' \) \) -print0)
+  
+    log "DEBUG" "Snapshot for $dir: ${snapshot[*]}"
 }
 

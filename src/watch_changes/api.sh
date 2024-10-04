@@ -9,7 +9,6 @@ source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
 
-
 watch_changes() {
   local old_snapshot=()
   local new_snapshot=()
@@ -22,51 +21,77 @@ watch_changes() {
     generate_snapshot "$INPUT_DIR" new_snapshot
 
     log "INFO" "watch_changes/api.sh: compare snapshots"
-    local dirs_to_handle=()
-    local files_to_handle=()
-    compare_snapshots old_snapshot new_snapshot dirs_to_handle files_to_handle 
+    local new_dirs=() deleted_dirs=() changed_dirs=()
+    local new_files=() deleted_files=() changed_files=()
 
-    log "INFO" "watch_changes/api.sh: directories to handle: ${dirs_to_handle[*]}"
-    if [ ${#dirs_to_handle[@]} -gt 0 ]; then
-      handle_dir_changes "${dirs_to_handle[@]}"
-    fi
 
-    log "INFO" "watch_changes/api.sh: files to handle: ${files_to_handle[*]}"
-    if [ ${#files_to_handle[@]} -gt 0 ]; then
-      handle_file_changes "${files_to_handle[@]}"
-    fi
+    compare_snapshots old_snapshot new_snapshot new_dirs deleted_dirs changed_dirs new_files deleted_files changed_files
+
+    # Output categorized changes to stdout
+    output_changes_to_stdout new_dirs "Dir" "new"
+    output_changes_to_stdout deleted_dirs "Dir" "deleted"
+    output_changes_to_stdout changed_dirs "Dir" "changed"
+    output_changes_to_stdout new_files "File" "new"
+    output_changes_to_stdout deleted_files "File" "deleted"
+    output_changes_to_stdout changed_files "File" "changed"
+
+    # Handle changes
+    handle_dir_changes "${new_dirs[@]}" "new"
+    handle_dir_changes "${deleted_dirs[@]}" "deleted"
+    handle_dir_changes "${changed_dirs[@]}" "changed"
+
+    handle_file_changes "${new_files[@]}" "new"
+    handle_file_changes "${deleted_files[@]}" "deleted"
+    handle_file_changes "${changed_files[@]}" "changed"
 
     old_snapshot=("${new_snapshot[@]}")
   done
 }
 
+# Function to output changes to stdout in a nice format
+output_changes_to_stdout() {
+  local items=("$@")
+  local type=$2
+  local change_type=$3
+  for item in "${items[@]}"; do
+    echo "$type $change_type: $item"
+  done
+}
+
 handle_dir_changes() {
   local dirs=("$@")
+  local type=$2
   for dir in "${dirs[@]}"; do
     relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
-    if [ -n "$relative_path" ]; then
-      log "INFO" "Handling changes in directory: $dir"
+    log "INFO" "Handling $type directory: $dir"
+    # Different actions based on type
+    if [ "$type" == "new" ]; then
       refresh_output "$relative_path"
-    else
-      log "ERROR" "Could not determine relative path for $dir, skipping."
+    elif [ "$type" == "deleted" ]; then
+      local output_dir_path="${OUTPUT_DIR}/${relative_path}"
+      log "INFO" "Removing output directory: $output_dir_path"
+      rm -rf "$output_dir_path"
+    elif [ "$type" == "changed" ]; then
+      refresh_output "$relative_path"
     fi
   done
 }
 
 handle_file_changes() {
   local files=("$@")
+  local type=$2
   for file in "${files[@]}"; do
-    log "INFO" "hande_file_changes: $file"
+    log "INFO" "handle_file_changes: $type $file"
     local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
     local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
-    if [ -f "$file" ]; then
-      log "INFO" "handle_file_changes: asciidoc exists, regenerating HTML $html_file"
+    if [ "$type" == "new" ]; then
       asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
-    else
-      log "INFO" "handle_file_changes: asciidoc removed - removing: $html_file"
+    elif [ "$type" == "deleted" ]; then
+      log "INFO" "Removing output file: $html_file"
       rm -f "$html_file"
+    elif [ "$type" == "changed" ]; then
+      asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
     fi
   done
 }
-
 
