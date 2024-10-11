@@ -5,7 +5,7 @@
 # dir structure) and directories with very many subdirectories (which can occur in
 # generated code, system folders and the like but likely not in folders containing
 # .adoc) we stop the search at a certain debth or in directories with to many sub-
-# directories.
+# directories. Only .adocs in the directory itself, not in subdirectories count.
 
 # Enable strict mode
 set -euxo pipefail
@@ -21,16 +21,24 @@ MAX_DEPTH=20
 #
 find_adoc_dirs() {
     local relative_start_path="$1"
-    declare -n adoc_dirs_ref="$2"  # nameref
+    local adoc_dirs_ref_name=$2
+    #declare -n adoc_dirs_ref="$2"  # nameref
     local current_depth="${3:-1}"  # not set when called from outside - default to 1
 
     local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
     echo "Searching for adocs in $absolute_input_start_path at depth $current_depth"
 
-    # Find subdirectories
+    # Find subdirectories while skipping .git and others
     local subdirs
+    subdirs=$(find "$absolute_input_start_path" -mindepth 1                   \
+                                                -maxdepth 1                   \
+                                                -type d                       \
+                                                ! -path '*/.git/*'            \
+                                                ! -name '.git'                \
+                                                ! -name 'docker'              \
+                                                ! -name 'node_modules')
+
     local subdir_count
-    subdirs=$(find "$absolute_input_start_path" -mindepth 1 -maxdepth 1 -type d)
     subdir_count=$(echo "$subdirs" | wc -l)
 
     # Check if max depth or max subdirs are exceeded
@@ -47,25 +55,24 @@ find_adoc_dirs() {
       echo "Checking subdir: $subdir"
       local relative_subdir
       # Skip directories that are not really subdirs
-      if [[ "$subdir" != "$absolute_input_start_path" && \
+      if [[ -z "$subdir" && \   # dir is empty string
+            "$subdir" != "$absolute_input_start_path" && \
             "$subdir" != "$absolute_input_start_path/.." && \
             "$subdir" != "$absolute_input_start_path/." ]]; then
         # Recursively search in the subdirectory regardless of .adoc presence
         relative_subdir="${subdir#$INPUT_DIR/}" # Remove base path
+
+        echo "Found .adoc in: $relative_subdir"
+        eval "$adoc_dirs_ref_name+=(\"$relative_subdir\")"   
         
         # Continue recursion before checking for .adoc files
-        find_adoc_dirs "$relative_subdir" adoc_dirs_ref $((current_depth + 1))
+        find_adoc_dirs "$relative_subdir" "$adoc_dirs_ref_name" $((current_depth + 1))
 
         # Only add to the result if this directory contains .adoc files
         if find "$subdir" -maxdepth 1 -name "*.adoc" | read -r; then
           echo "Found .adoc in: $relative_subdir"
-          adoc_dirs_ref+=("$relative_subdir")
         fi
       fi
     done <<< "$subdirs"
 }
-
-# Call the function for testing (this should be called in your main script)
-adoc_dir_array=()
-find_adoc_dirs "." adoc_dir_array
 

@@ -13,7 +13,7 @@ cleanup() {
     fi
 
     # Terminate the livereload process
-    if [ ! -z "$LIVERELOAD_PID" ]; then
+    if [ ! -z "${LIVERELOAD_PID:-}" ]; then
         kill $LIVERELOAD_PID
         wait $LIVERELOAD_PID 2>/dev/null
     fi

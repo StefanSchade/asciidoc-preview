@@ -1,29 +1,25 @@
-
-C:\Users\schades\Documents\REPOS\asciidoc-preview\scripts>run_asciidoc_preview.cmd ../
-FINDSTR: No search strings
-[+] Building 0.1s (16/16) FINISHED
- => [internal] load .dockerignore                                                   0.0s
- => => transferring context: 2B                                                     0.0s
- => [internal] load build definition from Dockerfile                                0.0s
- => => transferring dockerfile: 1.25kB                                              0.0s
- => [internal] load metadata for docker.io/library/ubuntu:latest                    0.0s
- => [ 1/11] FROM docker.io/library/ubuntu:latest                                    0.0s
- => [internal] load build context                                                   0.0s
- => => transferring context: 1.02kB                                                 0.0s
- => CACHED [ 2/11] RUN apt-get update &&     apt-get install -y     asciidoctor     0.0s
- => CACHED [ 3/11] RUN npm install -g livereloadx                                   0.0s
- => CACHED [ 4/11] RUN useradd -ms /bin/bash containeruser                          0.0s
- => CACHED [ 5/11] RUN mkdir -p /workspace/input                                    0.0s
- => CACHED [ 6/11] COPY ../src /workspace/src                                       0.0s
- => CACHED [ 7/11] COPY ../scripts /workspace/scripts                               0.0s
- => CACHED [ 8/11] RUN find /workspace/src -type f -name "*.sh" -exec dos2unix {}   0.0s
- => CACHED [ 9/11] RUN chown -R containeruser:containeruser /workspace &&     chmo  0.0s
- => CACHED [10/11] RUN chmod -R 755 /workspace/input &&     chown -R root:root /wo  0.0s
- => CACHED [11/11] WORKDIR /workspace                                               0.0s
- => exporting to image                                                              0.0s
- => => exporting layers                                                             0.0s
- => => writing image sha256:81a00bccc52209bcaed655b55cf5e3d8f2af473d19fe33126b27f3  0.0s
- => => naming to docker.io/library/asciidoc-preview                                 0.0s
+ => [internal] load .dockerignore                                                                                                                                                            0.0s
+ => => transferring context: 2B                                                                                                                                                              0.0s
+ => [internal] load build definition from Dockerfile                                                                                                                                         0.0s
+ => => transferring dockerfile: 1.25kB                                                                                                                                                       0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:latest                                                                                                                             0.0s
+ => [internal] load build context                                                                                                                                                            0.0s
+ => => transferring context: 1.02kB                                                                                                                                                          0.0s
+ => [ 1/11] FROM docker.io/library/ubuntu:latest                                                                                                                                             0.0s
+ => CACHED [ 2/11] RUN apt-get update &&     apt-get install -y     asciidoctor     file     dos2unix     nodejs     curl     npm &&     apt-get clean &&     rm -rf /var/lib/apt/lists/*    0.0s
+ => CACHED [ 3/11] RUN npm install -g livereloadx                                                                                                                                            0.0s
+ => CACHED [ 4/11] RUN useradd -ms /bin/bash containeruser                                                                                                                                   0.0s
+ => CACHED [ 5/11] RUN mkdir -p /workspace/input                                                                                                                                             0.0s
+ => CACHED [ 6/11] COPY ../src /workspace/src                                                                                                                                                0.0s
+ => CACHED [ 7/11] COPY ../scripts /workspace/scripts                                                                                                                                        0.0s
+ => CACHED [ 8/11] RUN find /workspace/src -type f -name "*.sh" -exec dos2unix {} ; &&     find /workspace/scripts -type f -name "*.sh" -exec dos2unix {} ;                                  0.0s
+ => CACHED [ 9/11] RUN chown -R containeruser:containeruser /workspace &&     chmod -R 755 /workspace                                                                                        0.0s
+ => CACHED [10/11] RUN chmod -R 755 /workspace/input &&     chown -R root:root /workspace/input                                                                                              0.0s
+ => CACHED [11/11] WORKDIR /workspace                                                                                                                                                        0.0s
+ => exporting to image                                                                                                                                                                       0.0s
+ => => exporting layers                                                                                                                                                                      0.0s
+ => => writing image sha256:07ca937b85286b4185daf0b47470ffb868c4da7923ca936d260fa296fd1120e7                                                                                                 0.0s
+ => => naming to docker.io/library/asciidoc-preview                                                                                                                                          0.0s
 + IFS='
         '
 + LOG_LEVEL=DEBUG
@@ -61,11 +57,11 @@ FINDSTR: No search strings
 + shift
 + local 'message=***********'
 ++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
++ local 'timestamp=2024-10-11 15:09:15'
 + levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
 + declare -A levels
 + ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] ***********'
++ echo '2024-10-11 15:09:15 [INFO] ***********'
 ++ stat -c%s /workspace/logs/logfile.txt
 + local file_size=39
 + ((  file_size > MAX_SIZE  ))
@@ -74,11 +70,11 @@ FINDSTR: No search strings
 + shift
 + local 'message=* main.sh *'
 ++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
++ local 'timestamp=2024-10-11 15:09:15'
 + levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
 + declare -A levels
 + ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] * main.sh *'
++ echo '2024-10-11 15:09:15 [INFO] * main.sh *'
 ++ stat -c%s /workspace/logs/logfile.txt
 + local file_size=78
 + ((  file_size > MAX_SIZE  ))
@@ -87,11 +83,11 @@ FINDSTR: No search strings
 + shift
 + local 'message=***********'
 ++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
++ local 'timestamp=2024-10-11 15:09:15'
 + levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
 + declare -A levels
 + ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] ***********'
++ echo '2024-10-11 15:09:15 [INFO] ***********'
 ++ stat -c%s /workspace/logs/logfile.txt
 + local file_size=117
 + ((  file_size > MAX_SIZE  ))
@@ -111,361 +107,1246 @@ FINDSTR: No search strings
 +++ set -euxo pipefail
 +++ IFS='
         '
-++ source /workspace/src/generate_output/_generate_index.sh
-+++ set -euxo pipefail
-+++ IFS='
-        '
-++ source /workspace/src/helper/sanitize_path.sh
-+++ set -euxo pipefail
-+++ IFS='
-        '
-++ source /workspace/src/helper/absolute_path_to_relative_path.sh
-+++ set -euo pipefail
-+++ IFS='
-        '
-+ source /workspace/src/livereloadx_server/api.sh
-++ set -euxo pipefail
-++ IFS='
-        '
-++ source /workspace/src/livereloadx_server/_check_server_status.sh
-+++ set -euxo pipefail
-+++ IFS='
-        '
-+ source /workspace/src/watch_changes/api.sh
-++ set -euxo pipefail
-++ IFS='
-        '
-++ source /workspace/src/watch_changes/_compare_snapshots.sh
-+++ set -euxo pipefail
-+++ IFS='
-        '
-++ source /workspace/src/watch_changes/_generate_snapshot.sh
-+++ set -euxo pipefail
-++ source /workspace/src/helper/absolute_path_to_relative_path.sh
-+++ set -euo pipefail
-+++ IFS='
-        '
-+ log INFO 'start logging'
-+ local level=INFO
-+ shift
-+ local 'message=start logging'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] start logging'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=158
-+ ((  file_size > MAX_SIZE  ))
-++ pwd
-+ log INFO 'running script in directory /workspace'
-+ local level=INFO
-+ shift
-+ local 'message=running script in directory /workspace'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] running script in directory /workspace'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=224
-+ ((  file_size > MAX_SIZE  ))
-+ log INFO 'sourced scripts in /workspace/src'
-+ local level=INFO
-+ shift
-+ local 'message=sourced scripts in /workspace/src'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] sourced scripts in /workspace/src'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=285
-+ ((  file_size > MAX_SIZE  ))
-+ trap cleanup SIGINT SIGTERM
-+ main
-+ log INFO 'calling refresh outupt'
-+ local level=INFO
-+ shift
-+ local 'message=calling refresh outupt'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] calling refresh outupt'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=335
-+ ((  file_size > MAX_SIZE  ))
-+ refresh_output .
-+ log INFO 'inside refresh output'
-+ local level=INFO
-+ shift
-+ local 'message=inside refresh output'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] inside refresh output'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=384
-+ ((  file_size > MAX_SIZE  ))
-+ local relative_start_path=.
-+ local absolute_input_start_path=/workspace/input/.
-+ local absolute_output_start_path=/workspace/output/.
-++ sanitize_path /workspace/input/.
-++ local path=/workspace/input/.
-++ path=/workspace/input/
-++ path=/workspace/input/
-++ echo /workspace/input/
-+ absolute_input_start_path=/workspace/input/
-++ sanitize_path /workspace/output/.
-++ local path=/workspace/output/.
-++ path=/workspace/output/
-++ path=/workspace/output/
-++ echo /workspace/output/
-+ absolute_output_start_path=/workspace/output/
-+ log INFO 'refreshing output .'
-+ local level=INFO
-+ shift
-+ local 'message=refreshing output .'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] refreshing output .'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=431
-+ ((  file_size > MAX_SIZE  ))
-+ log INFO 'absolute input start path /workspace/input/'
-+ local level=INFO
-+ shift
-+ local 'message=absolute input start path /workspace/input/'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] absolute input start path /workspace/input/'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=502
-+ ((  file_size > MAX_SIZE  ))
-+ log INFO 'absolute output start path /workspace/output/'
-+ local level=INFO
-+ shift
-+ local 'message=absolute output start path /workspace/output/'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] absolute output start path /workspace/output/'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=575
-+ ((  file_size > MAX_SIZE  ))
-+ check_dir /workspace/input/
-+ check_existence /workspace/input/ dir
-+ local path=/workspace/input/
-+ local type=dir
-+ [[ dir == \d\i\r ]]
-+ [[ -d /workspace/input/ ]]
-+ log INFO 'Directory /workspace/input/ exists.'
-+ local level=INFO
-+ shift
-+ local 'message=Directory /workspace/input/ exists.'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] Directory /workspace/input/ exists.'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=638
-+ ((  file_size > MAX_SIZE  ))
-+ return 0
-+ return 0
-+ log ' INFO' 'input dir is existing'
-+ local level=INFO
-+ shift
-+ local 'message=input dir is existing'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] input dir is existing'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=687
-+ ((  file_size > MAX_SIZE  ))
-+ '[' -d /workspace/output/ ']'
-+ log INFO 'refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
-+ local level=INFO
-+ shift
-+ local 'message=refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=801
-+ ((  file_size > MAX_SIZE  ))
-+ find /workspace/output/ -name '*.html' -not -name index.html
-+ IFS=
-+ read -r html_file
-++ find /workspace/output/ -name '*.html' -not -name index.html -exec rm -f '{}' ';'
-+ find_html_output=
-+ [[ 0 -ne 0 ]]
-++ ls -la /workspace/output/
-+ ls_output='total 8
-drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
-drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
-+ [[ 0 -eq 0 ]]
-+ log INFO 'directory content: total 8
-drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
-drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
-+ local level=INFO
-+ shift
-+ local 'message=directory content: total 8
-drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
-drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] directory content: total 8
-drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
-drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=978
-+ ((  file_size > MAX_SIZE  ))
-+ find /workspace/output/ -mindepth 1 -type d -not -path '*/\.*' -print0
-+ tr '\0' '\n'
-+ IFS=
-+ read -d '
-' outdir
-+ adoc_dir_array=()
-+ local adoc_dir_array
-+ find_adoc_dirs . adoc_dir_array
-+ local relative_start_path=.
-+ local absolute_input_start_path=/workspace/input/.
-+ local -n adoc_dirs_ref=adoc_dir_array
-+ log INFO 'Searching for adocs in /workspace/input/.'
-+ local level=INFO
-+ shift
-+ local 'message=Searching for adocs in /workspace/input/.'
-++ date '+%Y-%m-%d %H:%M:%S'
-+ local 'timestamp=2024-10-11 10:13:21'
-+ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
-+ declare -A levels
-+ ((  2 <= 3  ))
-+ echo '2024-10-11 10:13:21 [INFO] Searching for adocs in /workspace/input/.'
-++ stat -c%s /workspace/logs/logfile.txt
-+ local file_size=1047
-+ ((  file_size > MAX_SIZE  ))
-+ adoc_dirs_ref+=("$relative_start_path")
-+ local subdirs
-++ find /workspace/input/. -type d
-+ subdirs='/workspace/input/.
-/workspace/input/./.git
-/workspace/input/./.git/hooks
-/workspace/input/./.git/info
-/workspace/input/./.git/logs
-/workspace/input/./.git/logs/refs
-/workspace/input/./.git/logs/refs/heads
-/workspace/input/./.git/logs/refs/remotes
-/workspace/input/./.git/logs/refs/remotes/origin
-/workspace/input/./.git/objects
-/workspace/input/./.git/objects/01
-/workspace/input/./.git/objects/02
-/workspace/input/./.git/objects/03
-/workspace/input/./.git/objects/04
-/workspace/input/./.git/objects/05
-/workspace/input/./.git/objects/06
-/workspace/input/./.git/objects/07
-/workspace/input/./.git/objects/09
-/workspace/input/./.git/objects/0b
-/workspace/input/./.git/objects/0d
-/workspace/input/./.git/objects/0e
-....
-
- a lot more git stuff here
-
-....
-/workspace/input/./.git/objects/fb
-/workspace/input/./.git/objects/fd
-/workspace/input/./.git/objects/info
-/workspace/input/./.git/objects/pack
-/workspace/input/./.git/refs
-/workspace/input/./.git/refs/heads
-/workspace/input/./.git/refs/remotes
-/workspace/input/./.git/refs/remotes/origin
-/workspace/input/./.git/refs/tags
++++ MAX_SUBDIRS=200
++++ MAX_DEPTH=20
++++ adoc_dir_array=()
++++ find_adoc_dirs . adoc_dir_array
++++ local relative_start_path=.
++++ declare -n adoc_dirs_ref=adoc_dir_array
++++ local current_depth=1
++++ local absolute_input_start_path=/workspace/input/.
++++ echo 'Searching for adocs in /workspace/input/. at depth 1'
+Searching for adocs in /workspace/input/. at depth 1
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/. -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/./.git
 /workspace/input/./docker
 /workspace/input/./scripts
 /workspace/input/./src
-/workspace/input/./src/generate_output
-/workspace/input/./src/helper
-/workspace/input/./src/livereloadx_server
-/workspace/input/./src/watch_changes
-/workspace/input/./tmp2
-/workspace/input/./tmp2/solution_designd2
-/workspace/input/./tmp2/solution_designd2/subdir2'
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/.'
-Checking subdir: /workspace/input/.
-+ [[ /workspace/input/. != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/./.git'
+/workspace/input/./tmp2'
+++++ echo '/workspace/input/./.git
+/workspace/input/./docker
+/workspace/input/./scripts
+/workspace/input/./src
+/workspace/input/./tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/./.git'
 Checking subdir: /workspace/input/./.git
-+ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
-+ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
-+ find /workspace/input/./.git -maxdepth 1 -name '*.adoc'
-+ read -r
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/./.git/hooks'
++++ local relative_subdir
++++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++++ relative_subdir=./.git
++++ find_adoc_dirs ./.git adoc_dirs_ref 2
++++ local relative_start_path=./.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=2
++++ local absolute_input_start_path=/workspace/input/./.git
++++ echo 'Searching for adocs in /workspace/input/./.git at depth 2'
+Searching for adocs in /workspace/input/./.git at depth 2
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/./.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/./.git/hooks
+/workspace/input/./.git/info
+/workspace/input/./.git/logs
+/workspace/input/./.git/objects
+/workspace/input/./.git/refs'
+++++ echo '/workspace/input/./.git/hooks
+/workspace/input/./.git/info
+/workspace/input/./.git/logs
+/workspace/input/./.git/objects
+/workspace/input/./.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/./.git/hooks'
 Checking subdir: /workspace/input/./.git/hooks
-+ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
-+ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
-+ find /workspace/input/./.git/hooks -maxdepth 1 -name '*.adoc'
-+ read -r
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/./.git/info'
-Checking subdir: /workspace/input/./.git/info
-+ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
-+ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
-+ find /workspace/input/./.git/info -maxdepth 1 -name '*.adoc'
-+ read -r
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/./.git/logs'
-Checking subdir: /workspace/input/./.git/logs
-+ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
-+ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
-+ find /workspace/input/./.git/logs -maxdepth 1 -name '*.adoc'
-+ read -r
-+ IFS=
-+ read -r subdir
-+ echo 'Checking subdir: /workspace/input/./.git/logs/refs'
-Checking subdir: /workspace/input/./.git/logs/refs
-+ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
-+ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
-+ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
-+ find /workspace/input/./.git/logs/refs -maxdepth 1 -name '*.adoc'
-+ read -r
-+ IFS=
++++ local relative_subdir
++++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t ]]
++++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t\/\. ]]
++++ relative_subdir=./.git/hooks
++++ find_adoc_dirs ./.git/hooks adoc_dirs_ref 3
++++ local relative_start_path=./.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=3
++++ local absolute_input_start_path=/workspace/input/./.git/hooks
++++ echo 'Searching for adocs in /workspace/input/./.git/hooks at depth 3'
+Searching for adocs in /workspace/input/./.git/hooks at depth 3
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/./.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 4
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=4
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 4'
+Searching for adocs in /workspace/input/ at depth 4
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 5
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=5
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 5'
+Searching for adocs in /workspace/input/.git at depth 5
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 6
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=6
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 6'
+Searching for adocs in /workspace/input/.git/hooks at depth 6
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 7
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=7
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 7'
+Searching for adocs in /workspace/input/ at depth 7
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 8
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=8
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 8'
+Searching for adocs in /workspace/input/.git at depth 8
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 9
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=9
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 9'
+Searching for adocs in /workspace/input/.git/hooks at depth 9
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 10
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=10
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 10'
+Searching for adocs in /workspace/input/ at depth 10
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 11
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=11
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 11'
+Searching for adocs in /workspace/input/.git at depth 11
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 12
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=12
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 12'
+Searching for adocs in /workspace/input/.git/hooks at depth 12
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 13
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=13
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 13'
+Searching for adocs in /workspace/input/ at depth 13
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 14
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=14
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 14'
+Searching for adocs in /workspace/input/.git at depth 14
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 15
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=15
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 15'
+Searching for adocs in /workspace/input/.git/hooks at depth 15
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 16
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=16
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 16'
+Searching for adocs in /workspace/input/ at depth 16
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 17
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=17
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 17'
+Searching for adocs in /workspace/input/.git at depth 17
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+++++ wc -l
+/workspace/input/.git/refs'
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 18
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=18
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 18'
+Searching for adocs in /workspace/input/.git/hooks at depth 18
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\h\o\o\k\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 19
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=19
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 19'
+Searching for adocs in /workspace/input/ at depth 19
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git'
+Checking subdir: /workspace/input/.git
++++ local relative_subdir
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=.git
++++ find_adoc_dirs .git adoc_dirs_ref 20
++++ local relative_start_path=.git
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=20
++++ local absolute_input_start_path=/workspace/input/.git
++++ echo 'Searching for adocs in /workspace/input/.git at depth 20'
+Searching for adocs in /workspace/input/.git at depth 20
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ echo '/workspace/input/.git/hooks
+/workspace/input/.git/info
+/workspace/input/.git/logs
+/workspace/input/.git/objects
+/workspace/input/.git/refs'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/hooks'
+Checking subdir: /workspace/input/.git/hooks
++++ local relative_subdir
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/hooks
++++ find_adoc_dirs .git/hooks adoc_dirs_ref 21
++++ local relative_start_path=.git/hooks
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/.git/hooks
++++ echo 'Searching for adocs in /workspace/input/.git/hooks at depth 21'
+Searching for adocs in /workspace/input/.git/hooks at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/hooks -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in .git/hooks. Stopping recursion.'
+Maximum depth 20 exceeded in .git/hooks. Stopping recursion.
++++ return
++++ find /workspace/input/.git/hooks -maxdepth 1 -name '*.adoc'
++++ read -r
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/info'
+Checking subdir: /workspace/input/.git/info
++++ local relative_subdir
++++ [[ /workspace/input/.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/info
++++ find_adoc_dirs .git/info adoc_dirs_ref 21
++++ local relative_start_path=.git/info
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/.git/info
++++ echo 'Searching for adocs in /workspace/input/.git/info at depth 21'
+Searching for adocs in /workspace/input/.git/info at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/info -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in .git/info. Stopping recursion.'
+Maximum depth 20 exceeded in .git/info. Stopping recursion.
++++ return
++++ find /workspace/input/.git/info -maxdepth 1 -name '*.adoc'
++++ read -r
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/logs'
+Checking subdir: /workspace/input/.git/logs
++++ local relative_subdir
++++ [[ /workspace/input/.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/logs
++++ find_adoc_dirs .git/logs adoc_dirs_ref 21
++++ local relative_start_path=.git/logs
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/.git/logs
++++ echo 'Searching for adocs in /workspace/input/.git/logs at depth 21'
+Searching for adocs in /workspace/input/.git/logs at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/logs -mindepth 1 -maxdepth 1 -type d
++++ subdirs=/workspace/input/.git/logs/refs
+++++ echo /workspace/input/.git/logs/refs
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in .git/logs. Stopping recursion.'
+Maximum depth 20 exceeded in .git/logs. Stopping recursion.
++++ return
++++ find /workspace/input/.git/logs -maxdepth 1 -name '*.adoc'
++++ read -r
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/objects'
+Checking subdir: /workspace/input/.git/objects
++++ local relative_subdir
++++ [[ /workspace/input/.git/objects != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/objects != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/objects != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/objects
++++ find_adoc_dirs .git/objects adoc_dirs_ref 21
++++ local relative_start_path=.git/objects
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/.git/objects
++++ echo 'Searching for adocs in /workspace/input/.git/objects at depth 21'
+Searching for adocs in /workspace/input/.git/objects at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/objects -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/objects/01
+/workspace/input/.git/objects/02
+/workspace/input/.git/objects/03
+/workspace/input/.git/objects/04
+/workspace/input/.git/objects/05
+/workspace/input/.git/objects/06
+/workspace/input/.git/objects/07
+/workspace/input/.git/objects/09
+/workspace/input/.git/objects/0b
+/workspace/input/.git/objects/0d
+/workspace/input/.git/objects/0e
+/workspace/input/.git/objects/0f
+/workspace/input/.git/objects/10
+/workspace/input/.git/objects/11
+/workspace/input/.git/objects/12
+/workspace/input/.git/objects/13
+/workspace/input/.git/objects/14
+/workspace/input/.git/objects/15
+/workspace/input/.git/objects/16
+/workspace/input/.git/objects/17
+/workspace/input/.git/objects/18
+/workspace/input/.git/objects/1b
+/workspace/input/.git/objects/1c
+/workspace/input/.git/objects/1d
+/workspace/input/.git/objects/1e
+/workspace/input/.git/objects/1f
+/workspace/input/.git/objects/20
+/workspace/input/.git/objects/21
+/workspace/input/.git/objects/22
+/workspace/input/.git/objects/23
+/workspace/input/.git/objects/26
+/workspace/input/.git/objects/27
+/workspace/input/.git/objects/28
+/workspace/input/.git/objects/2b
+/workspace/input/.git/objects/2d
+/workspace/input/.git/objects/2e
+/workspace/input/.git/objects/2f
+/workspace/input/.git/objects/31
+/workspace/input/.git/objects/32
+/workspace/input/.git/objects/33
+/workspace/input/.git/objects/34
+/workspace/input/.git/objects/35
+/workspace/input/.git/objects/36
+/workspace/input/.git/objects/37
+/workspace/input/.git/objects/39
+/workspace/input/.git/objects/3a
+/workspace/input/.git/objects/3c
+/workspace/input/.git/objects/3e
+/workspace/input/.git/objects/3f
+/workspace/input/.git/objects/40
+/workspace/input/.git/objects/41
+/workspace/input/.git/objects/42
+/workspace/input/.git/objects/43
+/workspace/input/.git/objects/44
+/workspace/input/.git/objects/45
+/workspace/input/.git/objects/46
+/workspace/input/.git/objects/48
+/workspace/input/.git/objects/49
+/workspace/input/.git/objects/4a
+/workspace/input/.git/objects/4c
+/workspace/input/.git/objects/4e
+/workspace/input/.git/objects/51
+/workspace/input/.git/objects/52
+/workspace/input/.git/objects/53
+/workspace/input/.git/objects/55
+/workspace/input/.git/objects/56
+/workspace/input/.git/objects/5a
+/workspace/input/.git/objects/5c
+/workspace/input/.git/objects/5e
+/workspace/input/.git/objects/60
+/workspace/input/.git/objects/63
+/workspace/input/.git/objects/65
+/workspace/input/.git/objects/66
+/workspace/input/.git/objects/68
+/workspace/input/.git/objects/69
+/workspace/input/.git/objects/6a
+/workspace/input/.git/objects/6b
+/workspace/input/.git/objects/6c
+/workspace/input/.git/objects/6f
+/workspace/input/.git/objects/70
+/workspace/input/.git/objects/73
+/workspace/input/.git/objects/74
+/workspace/input/.git/objects/75
+/workspace/input/.git/objects/77
+/workspace/input/.git/objects/7b
+/workspace/input/.git/objects/7c
+/workspace/input/.git/objects/7f
+/workspace/input/.git/objects/80
+/workspace/input/.git/objects/81
+/workspace/input/.git/objects/82
+/workspace/input/.git/objects/83
+/workspace/input/.git/objects/85
+/workspace/input/.git/objects/86
+/workspace/input/.git/objects/87
+/workspace/input/.git/objects/8a
+/workspace/input/.git/objects/8b
+/workspace/input/.git/objects/8c
+/workspace/input/.git/objects/8d
+/workspace/input/.git/objects/8e
+/workspace/input/.git/objects/90
+/workspace/input/.git/objects/91
+/workspace/input/.git/objects/92
+/workspace/input/.git/objects/93
+/workspace/input/.git/objects/94
+/workspace/input/.git/objects/95
+/workspace/input/.git/objects/96
+/workspace/input/.git/objects/98
+/workspace/input/.git/objects/9b
+/workspace/input/.git/objects/9c
+/workspace/input/.git/objects/9d
+/workspace/input/.git/objects/9e
+/workspace/input/.git/objects/a0
+/workspace/input/.git/objects/a2
+/workspace/input/.git/objects/a3
+/workspace/input/.git/objects/a4
+/workspace/input/.git/objects/a7
+/workspace/input/.git/objects/a8
+/workspace/input/.git/objects/a9
+/workspace/input/.git/objects/aa
+/workspace/input/.git/objects/ab
+/workspace/input/.git/objects/ac
+/workspace/input/.git/objects/ad
+/workspace/input/.git/objects/af
+/workspace/input/.git/objects/b1
+/workspace/input/.git/objects/b2
+/workspace/input/.git/objects/b4
+/workspace/input/.git/objects/ba
+/workspace/input/.git/objects/bc
+/workspace/input/.git/objects/be
+/workspace/input/.git/objects/bf
+/workspace/input/.git/objects/c1
+/workspace/input/.git/objects/c2
+/workspace/input/.git/objects/c3
+/workspace/input/.git/objects/c4
+/workspace/input/.git/objects/c5
+/workspace/input/.git/objects/c6
+/workspace/input/.git/objects/c7
+/workspace/input/.git/objects/c8
+/workspace/input/.git/objects/c9
+/workspace/input/.git/objects/cc
+/workspace/input/.git/objects/cd
+/workspace/input/.git/objects/cf
+/workspace/input/.git/objects/d0
+/workspace/input/.git/objects/d1
+/workspace/input/.git/objects/d2
+/workspace/input/.git/objects/d3
+/workspace/input/.git/objects/d5
+/workspace/input/.git/objects/d7
+/workspace/input/.git/objects/da
+/workspace/input/.git/objects/db
+/workspace/input/.git/objects/dc
+/workspace/input/.git/objects/df
+/workspace/input/.git/objects/e0
+/workspace/input/.git/objects/e1
+/workspace/input/.git/objects/e2
+/workspace/input/.git/objects/e3
+/workspace/input/.git/objects/e4
+/workspace/input/.git/objects/e6
+/workspace/input/.git/objects/e7
+/workspace/input/.git/objects/e8
+/workspace/input/.git/objects/e9
+/workspace/input/.git/objects/ea
+/workspace/input/.git/objects/eb
+/workspace/input/.git/objects/ec
+/workspace/input/.git/objects/ee
+/workspace/input/.git/objects/ef
+/workspace/input/.git/objects/f0
+/workspace/input/.git/objects/f2
+/workspace/input/.git/objects/f3
+/workspace/input/.git/objects/f4
+/workspace/input/.git/objects/f5
+/workspace/input/.git/objects/f6
+/workspace/input/.git/objects/f7
+/workspace/input/.git/objects/f8
+/workspace/input/.git/objects/f9
+/workspace/input/.git/objects/fa
+/workspace/input/.git/objects/fb
+/workspace/input/.git/objects/fd
+/workspace/input/.git/objects/info
+/workspace/input/.git/objects/pack'
+++++ echo '/workspace/input/.git/objects/01
+/workspace/input/.git/objects/02
+/workspace/input/.git/objects/03
+/workspace/input/.git/objects/04
+/workspace/input/.git/objects/05
+
+
+......
+
+
+/workspace/input/.git/objects/15
+/workspace/input/.git/objects/16
+++++ wc -l
+/workspace/input/.git/objects/17
+/workspace/input/.git/objects/18
+/workspace/input/.git/objects/1b
+/workspace/input/.git/objects/1c
+/workspace/input/.git/objects/1d
+
+....
+
+
+/workspace/input/.git/objects/fa
+/workspace/input/.git/objects/fb
+/workspace/input/.git/objects/fd
+/workspace/input/.git/objects/info
+/workspace/input/.git/objects/pack'
++++ subdir_count=180
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in .git/objects. Stopping recursion.'
+Maximum depth 20 exceeded in .git/objects. Stopping recursion.
++++ return
++++ find /workspace/input/.git/objects -maxdepth 1 -name '*.adoc'
++++ read -r
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/.git/refs'
+Checking subdir: /workspace/input/.git/refs
++++ local relative_subdir
++++ [[ /workspace/input/.git/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t ]]
++++ [[ /workspace/input/.git/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\.\. ]]
++++ [[ /workspace/input/.git/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\g\i\t\/\. ]]
++++ relative_subdir=.git/refs
++++ find_adoc_dirs .git/refs adoc_dirs_ref 21
++++ local relative_start_path=.git/refs
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/.git/refs
++++ echo 'Searching for adocs in /workspace/input/.git/refs at depth 21'
+Searching for adocs in /workspace/input/.git/refs at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/.git/refs -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git/refs/heads
+/workspace/input/.git/refs/remotes
+/workspace/input/.git/refs/tags'
+++++ echo '/workspace/input/.git/refs/heads
+/workspace/input/.git/refs/remotes
+/workspace/input/.git/refs/tags'
+++++ wc -l
++++ subdir_count=3
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in .git/refs. Stopping recursion.'
+Maximum depth 20 exceeded in .git/refs. Stopping recursion.
++++ return
++++ find /workspace/input/.git/refs -maxdepth 1 -name '*.adoc'
++++ read -r
++++ IFS=
++++ read -r subdir
++++ find '' -maxdepth 1 -name '*.adoc'
++++ read -r
+find: '': No such file or directory
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/docker'
+Checking subdir: /workspace/input/docker
++++ local relative_subdir
++++ [[ /workspace/input/docker != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/docker != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/docker != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=docker
++++ find_adoc_dirs docker adoc_dirs_ref 20
++++ local relative_start_path=docker
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=20
++++ local absolute_input_start_path=/workspace/input/docker
++++ echo 'Searching for adocs in /workspace/input/docker at depth 20'
+Searching for adocs in /workspace/input/docker at depth 20
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/docker -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\d\o\c\k\e\r ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\d\o\c\k\e\r\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\d\o\c\k\e\r\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 21
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 21'
+Searching for adocs in /workspace/input/ at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in . Stopping recursion.'
+Maximum depth 20 exceeded in . Stopping recursion.
++++ return
++++ find '' -maxdepth 1 -name '*.adoc'
++++ read -r
+find: '': No such file or directory
++++ IFS=
++++ read -r subdir
++++ find '' -maxdepth 1 -name '*.adoc'
++++ read -r
+find: '': No such file or directory
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/scripts'
+Checking subdir: /workspace/input/scripts
++++ local relative_subdir
++++ [[ /workspace/input/scripts != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/scripts != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/scripts != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=scripts
++++ find_adoc_dirs scripts adoc_dirs_ref 20
++++ local relative_start_path=scripts
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=20
++++ local absolute_input_start_path=/workspace/input/scripts
++++ echo 'Searching for adocs in /workspace/input/scripts at depth 20'
+Searching for adocs in /workspace/input/scripts at depth 20
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/scripts -mindepth 1 -maxdepth 1 -type d
++++ subdirs=
+++++ echo ''
+++++ wc -l
++++ subdir_count=1
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: '
+Checking subdir:
++++ local relative_subdir
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\s\c\r\i\p\t\s ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\s\c\r\i\p\t\s\/\.\. ]]
++++ [[ '' != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\s\c\r\i\p\t\s\/\. ]]
++++ relative_subdir=
++++ find_adoc_dirs '' adoc_dirs_ref 21
++++ local relative_start_path=
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=21
++++ local absolute_input_start_path=/workspace/input/
++++ echo 'Searching for adocs in /workspace/input/ at depth 21'
+Searching for adocs in /workspace/input/ at depth 21
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/ -mindepth 1 -maxdepth 1 -type d
++++ subdirs='/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ echo '/workspace/input/.git
+/workspace/input/docker
+/workspace/input/scripts
+/workspace/input/src
+/workspace/input/tmp2'
+++++ wc -l
++++ subdir_count=5
++++ ((  subdir_count > MAX_SUBDIRS  ))
++++ ((  current_depth > MAX_DEPTH  ))
++++ echo 'Maximum depth 20 exceeded in . Stopping recursion.'
+Maximum depth 20 exceeded in . Stopping recursion.
++++ return
++++ find '' -maxdepth 1 -name '*.adoc'
++++ read -r
+find: '': No such file or directory
++++ IFS=
++++ read -r subdir
++++ find '' -maxdepth 1 -name '*.adoc'
++++ read -r
+find: '': No such file or directory
++++ IFS=
++++ read -r subdir
++++ echo 'Checking subdir: /workspace/input/src'
+Checking subdir: /workspace/input/src
++++ local relative_subdir
++++ [[ /workspace/input/src != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/ ]]
++++ [[ /workspace/input/src != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\.\. ]]
++++ [[ /workspace/input/src != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\/\. ]]
++++ relative_subdir=src
++++ find_adoc_dirs src adoc_dirs_ref 20
++++ local relative_start_path=src
++++ declare -n adoc_dirs_ref=adoc_dirs_ref
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: declare: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
+/workspace/src/generate_output/_find_adoc_dirs.sh: line 24: warning: adoc_dirs_ref: circular name reference
++++ local current_depth=20
++++ local absolute_input_start_path=/workspace/input/src
++++ echo 'Searching for adocs in /workspace/input/src at depth 20'
+Searching for adocs in /workspace/input/src at depth 20
++++ local subdirs
++++ local subdir_count
+++++ find /workspace/input/src -mindepth 1 -maxdepth 1 -type d
+^C+++ subdirs=
+asciidoc-preview
+C:\Users\schades\Documents\REPOS\asciidoc-preview\scripts>
