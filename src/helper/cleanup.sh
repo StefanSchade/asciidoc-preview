@@ -6,8 +6,8 @@ IFS=$'\n\t'
 
 cleanup() {
     echo "Cleaning up..."
-    # Terminate the watch process
-    if [ ! -z "$WATCH_PID" ]; then
+    # Terminate watch and initialize WATCH_ID
+    if [ ! -z "${WATCH_PID:-}" ]; then
         kill $WATCH_PID
         wait $WATCH_PID 2>/dev/null
     fi

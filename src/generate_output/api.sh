@@ -70,7 +70,7 @@ refresh_output() {
          if [ -n "$relative_output_path" ]; then
             indir="${INPUT_DIR}/$relative_output_path"
          else
-            log "ERROR" "Could not determine relative output path for $outdir"
+            log "ERROR" "Could not determine relative output path for $outdir"running scrip
             exit 1
          fi
             log "INFO" "checking if directory $indir should be removed"
@@ -81,7 +81,7 @@ refresh_output() {
             rm -rf "$outdir"
          fi
       fi
-    done
+   done
   else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
     mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
@@ -90,16 +90,24 @@ refresh_output() {
   # searching for directories containing *.adoc files below the current dir
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
+
+  # Only add the start directory if the array is empty (i.e., no .adoc files found)
+  if [ ${#adoc_dir_array[@]} -eq 0 ]; then
+    adoc_dir_array+=("$relative_start_path")
+  fi
+
   log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
-  log "INFO" "directories that have to be processed: ${adoc_dir_array[*]}"
+  log "INFO" "Directories that have to be processed: ${adoc_dir_array[*]}"
 
   log "INFO" "Start processing list of directories with input dir $INPUT_DIR and output dir $OUTPUT_DIR"
   for subdir in "${adoc_dir_array[@]}"; do
-    log "INFO" "Processing dir $subdir "
+    log "INFO" "Processing dir $subdir"
     mkdir -p "$OUTPUT_DIR/$subdir"
     find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
       (cd "$INPUT_DIR/$subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
     done
   done
+
+  # Generate index for all directories
   generate_all_indexes "$relative_start_path"
 }

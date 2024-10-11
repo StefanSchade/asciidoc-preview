@@ -1,0 +1,471 @@
+
+C:\Users\schades\Documents\REPOS\asciidoc-preview\scripts>run_asciidoc_preview.cmd ../
+FINDSTR: No search strings
+[+] Building 0.1s (16/16) FINISHED
+ => [internal] load .dockerignore                                                   0.0s
+ => => transferring context: 2B                                                     0.0s
+ => [internal] load build definition from Dockerfile                                0.0s
+ => => transferring dockerfile: 1.25kB                                              0.0s
+ => [internal] load metadata for docker.io/library/ubuntu:latest                    0.0s
+ => [ 1/11] FROM docker.io/library/ubuntu:latest                                    0.0s
+ => [internal] load build context                                                   0.0s
+ => => transferring context: 1.02kB                                                 0.0s
+ => CACHED [ 2/11] RUN apt-get update &&     apt-get install -y     asciidoctor     0.0s
+ => CACHED [ 3/11] RUN npm install -g livereloadx                                   0.0s
+ => CACHED [ 4/11] RUN useradd -ms /bin/bash containeruser                          0.0s
+ => CACHED [ 5/11] RUN mkdir -p /workspace/input                                    0.0s
+ => CACHED [ 6/11] COPY ../src /workspace/src                                       0.0s
+ => CACHED [ 7/11] COPY ../scripts /workspace/scripts                               0.0s
+ => CACHED [ 8/11] RUN find /workspace/src -type f -name "*.sh" -exec dos2unix {}   0.0s
+ => CACHED [ 9/11] RUN chown -R containeruser:containeruser /workspace &&     chmo  0.0s
+ => CACHED [10/11] RUN chmod -R 755 /workspace/input &&     chown -R root:root /wo  0.0s
+ => CACHED [11/11] WORKDIR /workspace                                               0.0s
+ => exporting to image                                                              0.0s
+ => => exporting layers                                                             0.0s
+ => => writing image sha256:81a00bccc52209bcaed655b55cf5e3d8f2af473d19fe33126b27f3  0.0s
+ => => naming to docker.io/library/asciidoc-preview                                 0.0s
++ IFS='
+        '
++ LOG_LEVEL=DEBUG
++++ readlink -f /workspace/src/main.sh
+++ dirname /workspace/src/main.sh
++ SCRIPT_DIR=/workspace/src
++ OUTPUT_DIR=/workspace/output
++ INPUT_DIR=/workspace/input
++ LOG_DIR=/workspace/logs
++ LOG_FILE=/workspace/logs/logfile.txt
++ mkdir -p /workspace/output
++ mkdir -p /workspace/logs
++ touch /workspace/logs/logfile.txt
++ source /workspace/src/helper/log_script_name.sh
+++ set -euxo pipefail
+++ IFS='
+        '
+++ source /workspace/src/helper/logger.sh
++++ set -euxo pipefail
++++ IFS='
+        '
++++ : /workspace/logs/logfile.txt
++++ : DEBUG
++++ MAX_SIZE=6291456
++++ THRESHOLD_SIZE=5242880
++++ touch /workspace/logs/logfile.txt
++ log_script_name
+++ basename /workspace/src/main.sh
++ local script_name=main.sh
+++ printf '%*s' 7
+++ tr ' ' '*'
++ local 'star_line=*******'
++ log INFO '***********'
++ local level=INFO
++ shift
++ local 'message=***********'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] ***********'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=39
++ ((  file_size > MAX_SIZE  ))
++ log INFO '* main.sh *'
++ local level=INFO
++ shift
++ local 'message=* main.sh *'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] * main.sh *'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=78
++ ((  file_size > MAX_SIZE  ))
++ log INFO '***********'
++ local level=INFO
++ shift
++ local 'message=***********'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] ***********'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=117
++ ((  file_size > MAX_SIZE  ))
++ source /workspace/src/helper/cleanup.sh
+++ set -euxo pipefail
+++ IFS='
+        '
++ source /workspace/src/generate_output/api.sh
+++ set -euxo pipefail
+++ IFS='
+        '
+++ source /workspace/src/generate_output/_check_existence.sh
++++ set -euxo pipefail
++++ IFS='
+        '
+++ source /workspace/src/generate_output/_find_adoc_dirs.sh
++++ set -euxo pipefail
++++ IFS='
+        '
+++ source /workspace/src/generate_output/_generate_index.sh
++++ set -euxo pipefail
++++ IFS='
+        '
+++ source /workspace/src/helper/sanitize_path.sh
++++ set -euxo pipefail
++++ IFS='
+        '
+++ source /workspace/src/helper/absolute_path_to_relative_path.sh
++++ set -euo pipefail
++++ IFS='
+        '
++ source /workspace/src/livereloadx_server/api.sh
+++ set -euxo pipefail
+++ IFS='
+        '
+++ source /workspace/src/livereloadx_server/_check_server_status.sh
++++ set -euxo pipefail
++++ IFS='
+        '
++ source /workspace/src/watch_changes/api.sh
+++ set -euxo pipefail
+++ IFS='
+        '
+++ source /workspace/src/watch_changes/_compare_snapshots.sh
++++ set -euxo pipefail
++++ IFS='
+        '
+++ source /workspace/src/watch_changes/_generate_snapshot.sh
++++ set -euxo pipefail
+++ source /workspace/src/helper/absolute_path_to_relative_path.sh
++++ set -euo pipefail
++++ IFS='
+        '
++ log INFO 'start logging'
++ local level=INFO
++ shift
++ local 'message=start logging'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] start logging'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=158
++ ((  file_size > MAX_SIZE  ))
+++ pwd
++ log INFO 'running script in directory /workspace'
++ local level=INFO
++ shift
++ local 'message=running script in directory /workspace'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] running script in directory /workspace'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=224
++ ((  file_size > MAX_SIZE  ))
++ log INFO 'sourced scripts in /workspace/src'
++ local level=INFO
++ shift
++ local 'message=sourced scripts in /workspace/src'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] sourced scripts in /workspace/src'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=285
++ ((  file_size > MAX_SIZE  ))
++ trap cleanup SIGINT SIGTERM
++ main
++ log INFO 'calling refresh outupt'
++ local level=INFO
++ shift
++ local 'message=calling refresh outupt'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] calling refresh outupt'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=335
++ ((  file_size > MAX_SIZE  ))
++ refresh_output .
++ log INFO 'inside refresh output'
++ local level=INFO
++ shift
++ local 'message=inside refresh output'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] inside refresh output'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=384
++ ((  file_size > MAX_SIZE  ))
++ local relative_start_path=.
++ local absolute_input_start_path=/workspace/input/.
++ local absolute_output_start_path=/workspace/output/.
+++ sanitize_path /workspace/input/.
+++ local path=/workspace/input/.
+++ path=/workspace/input/
+++ path=/workspace/input/
+++ echo /workspace/input/
++ absolute_input_start_path=/workspace/input/
+++ sanitize_path /workspace/output/.
+++ local path=/workspace/output/.
+++ path=/workspace/output/
+++ path=/workspace/output/
+++ echo /workspace/output/
++ absolute_output_start_path=/workspace/output/
++ log INFO 'refreshing output .'
++ local level=INFO
++ shift
++ local 'message=refreshing output .'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] refreshing output .'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=431
++ ((  file_size > MAX_SIZE  ))
++ log INFO 'absolute input start path /workspace/input/'
++ local level=INFO
++ shift
++ local 'message=absolute input start path /workspace/input/'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] absolute input start path /workspace/input/'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=502
++ ((  file_size > MAX_SIZE  ))
++ log INFO 'absolute output start path /workspace/output/'
++ local level=INFO
++ shift
++ local 'message=absolute output start path /workspace/output/'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] absolute output start path /workspace/output/'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=575
++ ((  file_size > MAX_SIZE  ))
++ check_dir /workspace/input/
++ check_existence /workspace/input/ dir
++ local path=/workspace/input/
++ local type=dir
++ [[ dir == \d\i\r ]]
++ [[ -d /workspace/input/ ]]
++ log INFO 'Directory /workspace/input/ exists.'
++ local level=INFO
++ shift
++ local 'message=Directory /workspace/input/ exists.'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] Directory /workspace/input/ exists.'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=638
++ ((  file_size > MAX_SIZE  ))
++ return 0
++ return 0
++ log ' INFO' 'input dir is existing'
++ local level=INFO
++ shift
++ local 'message=input dir is existing'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] input dir is existing'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=687
++ ((  file_size > MAX_SIZE  ))
++ '[' -d /workspace/output/ ']'
++ log INFO 'refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
++ local level=INFO
++ shift
++ local 'message=refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] refreshing directory /workspace/output/, cleaning html files that do not exist anymore'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=801
++ ((  file_size > MAX_SIZE  ))
++ find /workspace/output/ -name '*.html' -not -name index.html
++ IFS=
++ read -r html_file
+++ find /workspace/output/ -name '*.html' -not -name index.html -exec rm -f '{}' ';'
++ find_html_output=
++ [[ 0 -ne 0 ]]
+++ ls -la /workspace/output/
++ ls_output='total 8
+drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
+drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
++ [[ 0 -eq 0 ]]
++ log INFO 'directory content: total 8
+drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
+drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
++ local level=INFO
++ shift
++ local 'message=directory content: total 8
+drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
+drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] directory content: total 8
+drwxr-xr-x 2 containeruser containeruser 4096 Oct 11 10:13 .
+drwxr-xr-x 1 containeruser containeruser 4096 Oct 11 10:13 ..'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=978
++ ((  file_size > MAX_SIZE  ))
++ find /workspace/output/ -mindepth 1 -type d -not -path '*/\.*' -print0
++ tr '\0' '\n'
++ IFS=
++ read -d '
+' outdir
++ adoc_dir_array=()
++ local adoc_dir_array
++ find_adoc_dirs . adoc_dir_array
++ local relative_start_path=.
++ local absolute_input_start_path=/workspace/input/.
++ local -n adoc_dirs_ref=adoc_dir_array
++ log INFO 'Searching for adocs in /workspace/input/.'
++ local level=INFO
++ shift
++ local 'message=Searching for adocs in /workspace/input/.'
+++ date '+%Y-%m-%d %H:%M:%S'
++ local 'timestamp=2024-10-11 10:13:21'
++ levels=(['ERROR']='0' ['WARN']='1' ['INFO']='2' ['DEBUG']='3')
++ declare -A levels
++ ((  2 <= 3  ))
++ echo '2024-10-11 10:13:21 [INFO] Searching for adocs in /workspace/input/.'
+++ stat -c%s /workspace/logs/logfile.txt
++ local file_size=1047
++ ((  file_size > MAX_SIZE  ))
++ adoc_dirs_ref+=("$relative_start_path")
++ local subdirs
+++ find /workspace/input/. -type d
++ subdirs='/workspace/input/.
+/workspace/input/./.git
+/workspace/input/./.git/hooks
+/workspace/input/./.git/info
+/workspace/input/./.git/logs
+/workspace/input/./.git/logs/refs
+/workspace/input/./.git/logs/refs/heads
+/workspace/input/./.git/logs/refs/remotes
+/workspace/input/./.git/logs/refs/remotes/origin
+/workspace/input/./.git/objects
+/workspace/input/./.git/objects/01
+/workspace/input/./.git/objects/02
+/workspace/input/./.git/objects/03
+/workspace/input/./.git/objects/04
+/workspace/input/./.git/objects/05
+/workspace/input/./.git/objects/06
+/workspace/input/./.git/objects/07
+/workspace/input/./.git/objects/09
+/workspace/input/./.git/objects/0b
+/workspace/input/./.git/objects/0d
+/workspace/input/./.git/objects/0e
+....
+
+ a lot more git stuff here
+
+....
+/workspace/input/./.git/objects/fb
+/workspace/input/./.git/objects/fd
+/workspace/input/./.git/objects/info
+/workspace/input/./.git/objects/pack
+/workspace/input/./.git/refs
+/workspace/input/./.git/refs/heads
+/workspace/input/./.git/refs/remotes
+/workspace/input/./.git/refs/remotes/origin
+/workspace/input/./.git/refs/tags
+/workspace/input/./docker
+/workspace/input/./scripts
+/workspace/input/./src
+/workspace/input/./src/generate_output
+/workspace/input/./src/helper
+/workspace/input/./src/livereloadx_server
+/workspace/input/./src/watch_changes
+/workspace/input/./tmp2
+/workspace/input/./tmp2/solution_designd2
+/workspace/input/./tmp2/solution_designd2/subdir2'
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/.'
+Checking subdir: /workspace/input/.
++ [[ /workspace/input/. != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/./.git'
+Checking subdir: /workspace/input/./.git
++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++ [[ /workspace/input/./.git != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++ find /workspace/input/./.git -maxdepth 1 -name '*.adoc'
++ read -r
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/./.git/hooks'
+Checking subdir: /workspace/input/./.git/hooks
++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++ [[ /workspace/input/./.git/hooks != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++ find /workspace/input/./.git/hooks -maxdepth 1 -name '*.adoc'
++ read -r
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/./.git/info'
+Checking subdir: /workspace/input/./.git/info
++ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++ [[ /workspace/input/./.git/info != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++ find /workspace/input/./.git/info -maxdepth 1 -name '*.adoc'
++ read -r
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/./.git/logs'
+Checking subdir: /workspace/input/./.git/logs
++ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++ [[ /workspace/input/./.git/logs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++ find /workspace/input/./.git/logs -maxdepth 1 -name '*.adoc'
++ read -r
++ IFS=
++ read -r subdir
++ echo 'Checking subdir: /workspace/input/./.git/logs/refs'
+Checking subdir: /workspace/input/./.git/logs/refs
++ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\. ]]
++ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\.\. ]]
++ [[ /workspace/input/./.git/logs/refs != \/\w\o\r\k\s\p\a\c\e\/\i\n\p\u\t\/\.\/\. ]]
++ find /workspace/input/./.git/logs/refs -maxdepth 1 -name '*.adoc'
++ read -r
++ IFS=

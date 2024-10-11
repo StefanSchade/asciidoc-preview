@@ -277,8 +277,8 @@
 06 
 07 cleanup() {
 08     echo "Cleaning up..."
-09     # Terminate the watch process
-10     if [ ! -z "$WATCH_PID" ]; then
+09     # Terminate watch and initialize WATCH_ID
+10     if [ ! -z "${WATCH_PID:-}" ]; then
 11         kill $WATCH_PID
 12         wait $WATCH_PID 2>/dev/null
 13     fi
@@ -493,78 +493,107 @@
 
 // File: watch_changes\api.sh Depth: 1
 
-01 #!/bin/bash
-02 
-03 # Enable strict mode
-04 set -euxo pipefail
-05 IFS=$'\n\t'
-06 
-07 # Source necessary helper scripts
-08 source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
-09 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
-10 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
-11 
-12 
-13 watch_changes() {
-14   local old_snapshot=()
-15   local new_snapshot=()
-16 
-17   generate_snapshot "$INPUT_DIR" old_snapshot
-18 
-19   while true; do
-20     sleep 5
-21     log "INFO" "watch_changes/api.sh: generate new snapshot"
-22     generate_snapshot "$INPUT_DIR" new_snapshot
-23 
-24     log "INFO" "watch_changes/api.sh: compare snapshots"
-25     local dirs_to_handle=()
-26     local files_to_handle=()
-27     compare_snapshots old_snapshot new_snapshot dirs_to_handle files_to_handle 
-28 
-29     log "INFO" "watch_changes/api.sh: directories to handle: ${dirs_to_handle[*]}"
-30     if [ ${#dirs_to_handle[@]} -gt 0 ]; then
-31       handle_dir_changes "${dirs_to_handle[@]}"
-32     fi
-33 
-34     log "INFO" "watch_changes/api.sh: files to handle: ${files_to_handle[*]}"
-35     if [ ${#files_to_handle[@]} -gt 0 ]; then
-36       handle_file_changes "${files_to_handle[@]}"
-37     fi
-38 
-39     old_snapshot=("${new_snapshot[@]}")
-40   done
-41 }
-42 
-43 handle_dir_changes() {
-44   local dirs=("$@")
-45   for dir in "${dirs[@]}"; do
-46     relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
-47     if [ -n "$relative_path" ]; then
-48       log "INFO" "Handling changes in directory: $dir"
-49       refresh_output "$relative_path"
-50     else
-51       log "ERROR" "Could not determine relative path for $dir, skipping."
-52     fi
-53   done
-54 }
-55 
-56 handle_file_changes() {
-57   local files=("$@")
-58   for file in "${files[@]}"; do
-59     log "INFO" "hande_file_changes: $file"
-60     local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
-61     local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
-62     if [ -f "$file" ]; then
-63       log "INFO" "handle_file_changes: asciidoc exists, regenerating HTML $html_file"
-64       asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
-65     else
-66       log "INFO" "handle_file_changes: asciidoc removed - removing: $html_file"
-67       rm -f "$html_file"
-68     fi
-69   done
-70 }
-71 
-72 
+001 #!/bin/bash
+002 
+003 # Enable strict mode
+004 set -euxo pipefail
+005 IFS=$'\n\t'
+006 
+007 # Source necessary helper scripts
+008 source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
+009 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
+010 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
+011 
+012 watch_changes() {
+013   local old_snapshot=()
+014   local new_snapshot=()
+015 
+016   generate_snapshot "$INPUT_DIR" old_snapshot
+017 
+018   while true; do
+019     sleep 5
+020     log "INFO" "watch_changes/api.sh: generate new snapshot"
+021     generate_snapshot "$INPUT_DIR" new_snapshot
+022 
+023     log "INFO" "watch_changes/api.sh: compare snapshots"
+024     local new_dirs=() deleted_dirs=() changed_dirs=()
+025     local new_files=() deleted_files=() changed_files=()
+026 
+027     # Pass snapshots correctly to avoid circular reference
+028     compare_snapshots old_snapshot new_snapshot new_dirs deleted_dirs changed_dirs new_files deleted_files changed_files
+029 
+030     # Output categorized changes to stdout
+031     output_changes_to_stdout "${new_dirs[@]}" "Dir" "new"
+032     output_changes_to_stdout "${deleted_dirs[@]}" "Dir" "deleted"
+033     output_changes_to_stdout "${changed_dirs[@]}" "Dir" "changed"
+034     output_changes_to_stdout "${new_files[@]}" "File" "new"
+035     output_changes_to_stdout "${deleted_files[@]}" "File" "deleted"
+036     output_changes_to_stdout "${changed_files[@]}" "File" "changed"
+037 
+038     # Handle changes
+039     handle_dir_changes "${new_dirs[@]}" "new"
+040     handle_dir_changes "${deleted_dirs[@]}" "deleted"
+041     handle_dir_changes "${changed_dirs[@]}" "changed"
+042 
+043     handle_file_changes "${new_files[@]}" "new"
+044     handle_file_changes "${deleted_files[@]}" "deleted"
+045     handle_file_changes "${changed_files[@]}" "changed"
+046 
+047     old_snapshot=("${new_snapshot[@]}")
+048   done
+049 }
+050 
+051 # Function to output changes to stdout in a nice format
+052 output_changes_to_stdout() {
+053   local items=("$@")
+054   
+055   local type=${2:-"UnknownType"}
+056   local change_type=${3:-"UnknownChangeType"}
+057 
+058   # Output each item
+059   for item in "${items[@]}"; do
+060     echo "$type $change_type: $item"
+061   done
+062 }
+063 
+064 
+065 handle_dir_changes() {
+066   local -n dirs=$1  # Pass array by reference
+067   local type=$2
+068   for dir in "${dirs[@]}"; do
+069     relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+070     log "INFO" "Handling $type directory: $dir"
+071     # Handle actions based on type
+072     if [ "$type" == "new" ]; then
+073       refresh_output "$relative_path"
+074     elif [ "$type" == "deleted" ]; then
+075       local output_dir_path="${OUTPUT_DIR}/${relative_path}"
+076       log "INFO" "Removing output directory: $output_dir_path"
+077       rm -rf "$output_dir_path"
+078     elif [ "$type" == "changed" ]; then
+079       refresh_output "$relative_path"
+080     fi
+081   done
+082 }
+083 
+084 handle_file_changes() {
+085   local -n files=$1  # Pass array by reference
+086   local type=$2
+087   for file in "${files[@]}"; do
+088     log "INFO" "handle_file_changes: $type $file"
+089     local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
+090     local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
+091     if [ "$type" == "new" ]; then
+092       asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
+093     elif [ "$type" == "deleted" ]; then
+094       log "INFO" "Removing output file: $html_file"
+095       rm -f "$html_file"
+096     elif [ "$type" == "changed" ]; then
+097       asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
+098     fi
+099   done
+100 }
+101 
 
 // File: watch_changes\_compare_snapshots.sh Depth: 1
 
@@ -574,89 +603,83 @@
 04 set -euxo pipefail
 05 IFS=$'\n\t'
 06 
-07 compare_snapshots() {
-08   local -n old_snap=$1
-09   local -n new_snap=$2
-10   local -n dirs_to_handle_ref=$3
-11   local -n files_to_handle_ref=$4
-12   local -A unique_dirs=()
-13   local -A unique_files=()
-14 
-15   local old_dirs=$(printf "%s\n" "${old_snap[@]}" | grep '^D' | sort)
-16   local new_dirs=$(printf "%s\n" "${new_snap[@]}" | grep '^D' | sort)
-17   local old_files=$(printf "%s\n" "${old_snap[@]}" | grep '^F' | sort)
-18   local new_files=$(printf "%s\n" "${new_snap[@]}" | grep '^F' | sort)
-19 
-20   log "DEBUG" "Old Dirs: $old_dirs"
-21   log "DEBUG" "New Dirs: $new_dirs"
-22   log "DEBUG" "Old Files: $old_files"
-23   log "DEBUG" "New Files: $new_files"
+07 # Compare snapshots and categorize changes
+08 compare_snapshots() {
+09   local -n old_snapshot=$1
+10   local -n new_snapshot=$2
+11   local -n new_dirs_ref=$3
+12   local -n deleted_dirs_ref=$4
+13   local -n changed_dirs_ref=$5
+14   local -n new_files_ref=$6
+15   local -n deleted_files_ref=$7
+16   local -n changed_files_ref=$8
+17 
+18   local -A new_dirs_unique=()
+19   local -A deleted_dirs_unique=()
+20   local -A changed_dirs_unique=()
+21   local -A new_files_unique=()
+22   local -A deleted_files_unique=()
+23   local -A changed_files_unique=()
 24 
-25   # Check for removed directories
-26   comm -23 <(echo "$old_dirs") <(echo "$new_dirs") | while read -r line; do
-27     log "DEBUG" "Found removed directory: $line"
-28     unique_dirs["$(dirname "$(echo "$line" | cut -d' ' -f3-)")"]=1
-29   done
+25   # Rename snapshot lists to old/new for better clarity
+26   local old_dirs_snapshot=$(printf "%s\n" "${old_snapshot[@]}" | grep '^D' | sort)
+27   local new_dirs_snapshot=$(printf "%s\n" "${new_snapshot[@]}" | grep '^D' | sort)
+28   local old_files_snapshot=$(printf "%s\n" "${old_snapshot[@]}" | grep '^F' | sort)
+29   local new_files_snapshot=$(printf "%s\n" "${new_snapshot[@]}" | grep '^F' | sort)
 30 
-31   # Check for added directories
-32   comm -13 <(echo "$old_dirs") <(echo "$new_dirs") | while read -r line; do
-33     log "DEBUG" "Found added directory: $line"
-34     unique_dirs["$(dirname "$(echo "$line" | cut -d' ' -f3-)")"]=1
-35   done
-36 
-37   # Check for removed files
-38   comm -23 <(echo "$old_files") <(echo "$new_files") | while read -r line; do
-39     log "DEBUG" "Found removed file: $line"
-40     unique_files["$(echo "$line" | cut -d' ' -f3-)"]=1  # Track file changes separately
-41   done
-42 
-43   # Check for added files
-44   comm -13 <(echo "$old_files") <(echo "$new_files") | while read -r line; do
-45     log "DEBUG" "Found added file: $line"
-46     unique_files["$(echo "$line" | cut -d' ' -f3-)"]=1  # Track file changes separately
-47   done
-48 
-49   # Check for timestamp change to differentiate between new/delete/move - irrelevant for our algorithm
-50   while read -r old_line; do
-51     local old_timestamp=$(echo "$old_line" | cut -d' ' -f2)
-52     local old_dirname=$(echo "$old_line" | cut -d' ' -f3-)
-53     local new_line=$(echo "$new_dirs" | grep " $old_dirname$")
-54     if [[ -n "$new_line" ]]; then
-55       local new_timestamp=$(echo "$new_line" | cut -d' ' -f2)
-56       if [[ "$old_timestamp" != "$new_timestamp" ]]; then
-57         log "DEBUG" "Found timestamp change in directory: $old_dirname"
-58         #  this entry will already be in here as a changed 
-59         #  dir would appear in both added and deleted dirs
-60         #  we will enter an assertion at this point that breaks 
-61         #  with an error to stout if our assumption fails us
-62         echo -e "\033[31mINTERESTING ERROR: timestamp change in directory $old_dirname!\033[0m"
-63         echo -e "\033[31mdirectory was not marked as a new or old dir!\033[0m"
-64         echo -e "\033[31mThis should never happen. Please check.\033[0m"
-65         echo -e "\033[31mOld timestamp: $old_timestamp, New timestamp: $new_timestamp\033[0m"
-66       fi
-67     fi
-68   done <<< "$old_dirs"
-69 
-70   # Debugging: Print contents of unique_dirs and unique_files
-71   log "DEBUG" "Contents of unique_dirs: ${!unique_dirs[@]}"
-72   log "DEBUG" "Contents of unique_files: ${!unique_files[@]}"
-73 
-74   # Add collected directories to the reference array
-75   for dir in "${!unique_dirs[@]}"; do
-76     log "DEBUG" "Adding directory to handle: $dir"
-77     dirs_to_handle_ref+=("$dir")
-78   done
-79 
-80   # Add collected files to the reference array
-81   for file in "${!unique_files[@]}"; do
-82     log "DEBUG" "Adding file to handle: $file"
-83     files_to_handle_ref+=("$file")
-84   done
-85 
-86   log "DEBUG" "Directories to handle after comparison: ${dirs_to_handle_ref[*]}"
-87   log "DEBUG" "Files to handle after comparison: ${files_to_handle_ref[*]}"
-88 }
-89 
+31   # Handle directories
+32   handle_changes "directory" "$old_dirs_snapshot" "$new_dirs_snapshot" new_dirs_unique deleted_dirs_unique changed_dirs_unique
+33   # Handle files
+34   handle_changes "file" "$old_files_snapshot" "$new_files_snapshot" new_files_unique deleted_files_unique changed_files_unique
+35 
+36   # Transfer to reference variables for final output
+37   new_dirs_ref=("${!new_dirs_unique[@]}")
+38   deleted_dirs_ref=("${!deleted_dirs_unique[@]}")
+39   changed_dirs_ref=("${!changed_dirs_unique[@]}")
+40   new_files_ref=("${!new_files_unique[@]}")
+41   deleted_files_ref=("${!deleted_files_unique[@]}")
+42   changed_files_ref=("${!changed_files_unique[@]}")
+43 }
+44 
+45 # Generalized change handler
+46 handle_changes() {
+47   local type=$1
+48   local old_snapshot_list=$2
+49   local new_snapshot_list=$3
+50   local -n new_ref=$4
+51   local -n deleted_ref=$5
+52   local -n changed_ref=$6
+53 
+54   # Check for removed entries (in old but not in new)
+55   comm -23 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list") | while read -r line; do
+56     log "DEBUG" "Found removed $type: $line"
+57     deleted_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
+58   done
+59 
+60   # Check for added entries (in new but not in old)
+61   comm -13 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list") | while read -r line; do
+62     log "DEBUG" "Found added $type: $line"
+63     new_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
+64   done
+65 
+66   # Detect changes based on timestamp differences (when present in both new and old)
+67   while read -r old_line; do
+68     local old_timestamp=$(echo "$old_line" | cut -d' ' -f2)
+69     local entry=$(echo "$old_line" | cut -d' ' -f3-)
+70     local new_line=$(echo "$new_snapshot_list" | grep " $entry$")
+71     if [[ -n "$new_line" ]]; then
+72       local new_timestamp=$(echo "$new_line" | cut -d' ' -f2)
+73       if [[ "$old_timestamp" != "$new_timestamp" ]]; then
+74         log "DEBUG" "Found timestamp change in $type: $entry"
+75         changed_ref["$entry"]=1
+76         # Remove from both new and deleted if it was marked as both (meaning it changed)
+77         unset new_ref["$entry"]
+78         unset deleted_ref["$entry"]
+79       fi
+80     fi
+81   done <<< "$old_snapshot_list"
+82 }
+83 
 
 // File: watch_changes\_generate_snapshot.sh Depth: 1
 
@@ -674,16 +697,18 @@
 12   # Loop through each file or directory in the specified path
 13   while IFS= read -r -d '' entry; do
 14     if [ -d "$entry" ]; then
-15       # Directory snapshot with 'D' prefix
-16       snapshot+=("D $(stat --format='%Y' "$entry") $entry")
-17     elif [ -f "$entry" ]; then
-18       # File snapshot with 'F' prefix
-19       snapshot+=("F $(stat --format='%Y' "$entry") $entry")
-20     else
-21       echo "Warning: '$entry' does not exist or is neither a file nor a directory, skipping..." >&2
-22     fi
-23   done < <(find "$dir" \( -type d -o -type f \( -name '*.adoc' -o -name '*.asciidoc' \) \) -print0)
-24 
-25   log "DEBUG" "Snapshot for $dir: ${snapshot[*]}"
-26 }
-27 
+15       snapshot+=("D $(stat --format='%Y' "$entry") $entry")
+16     elif [ -f "$entry" ]; then
+17       # File snapshot with 'F' prefix
+18       snapshot+=("F $(stat --format='%Y' "$entry") $entry")
+19     else
+20       echo "Warning: '$entry' does not exist or is neither a file nor a directory, skipping..." >&2
+21     fi
+22     done < <(find "$dir" -type f \( -name '*.adoc' -o -name '*.asciidoc' \) \
+23                          -exec dirname {} \; | sort -u | \
+24                          xargs -I {} find {} \( -type d -o -type f \
+25                          \( -name '*.adoc' -o -name '*.asciidoc' \) \) -print0)
+26   
+27     log "DEBUG" "Snapshot for $dir: ${snapshot[*]}"
+28 }
+29 
