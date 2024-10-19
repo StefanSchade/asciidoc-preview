@@ -6,8 +6,10 @@ IFS=$'\n\t'
 
 source "$SCRIPT_DIR/helper/files/_sanitize_path.sh"
 source "$SCRIPT_DIR/helper/files/_check_existence.sh"
-source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
 source "$SCRIPT_DIR/generate_output/_generate_index.sh"
+source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
+source "$SCRIPT_DIR/generate_output/_clean_old_html.sh"
+source "$SCRIPT_DIR/generate_output/_clean_old_dirs.sh"
 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
 
 refresh_output() {
@@ -28,54 +30,8 @@ refresh_output() {
   assert_dir "$absolute_input_start_path"
 
   if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "refreshing directory $absolute_output_start_path, cleaning html files that do not exist anymore"
-  find "$absolute_output_start_path" -name "*.html" -not -name "index.html" | while IFS= read -r html_file; do
-    # Determine the relative path of the HTML file in the input directory
-    relative_html_path=$(output_path_to_relative_path "$html_file")
-    input_file="${INPUT_DIR}/${relative_html_path%.html}.adoc"
-    # Check if the corresponding .adoc file still exists
-    if check_file "$input_file"; then
-        log "INFO" "$input_file exists - keep $html_file"
-    else
-        log "INFO" "$input_file does not exist anymore - removing $html_file"
-        rm -f "$html_file"
-    fi
-  done
-
-# index.html of the start dir excluded as it will be overwritten later - removing it early would disturb the live update
-    find_html_output=$(find "$absolute_output_start_path" -name "*.html" -not -name "index.html" -exec rm -f {} \; 2>&1)
-    if [[ $? -ne 0 ]]; then
-       log "ERROR" "no file found in ${absolute_output_start_path}, but that is not an error"
-    fi
-
-    # remove later as this did just contribute to the debugging durign development
-    ls_output=$(ls -la "$absolute_output_start_path" 2>&1)
-    if [[ $? -eq 0 ]]; then
-       log "INFO" "directory content: $ls_output"
-    else
-       mog "ERROR" "Error listening directory content: $ls_output"
-    fi
-
-    # find_dir_output=$(find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -exec rm -rf {} \; 2>&1)
-    # results in an error as the parent directory might already have been removed before. therefore we switch to this form
-    find "$absolute_output_start_path" -mindepth 1 -type d -not -path "*/\.*" -print0 | tr '\0' '\n' | while IFS= read -d $'\n' outdir; do
-      if [ -n "$outdir" ]; then  # Add a check to ensure $dir is not empty
-         relative_output_path=$(output_path_to_relative_path "$outdir")
-         if [ -n "$relative_output_path" ]; then
-            indir="${INPUT_DIR}/$relative_output_path"
-         else
-            log "ERROR" "Could not determine relative output path for $outdir"running scrip
-            exit 1
-         fi
-            log "INFO" "checking if directory $indir should be removed"
-         if check_dir "$indir"; then
-            log "INFO" "directory $indir exists - skip removal of $outdir"
-         else
-            log "INFO" "directory $indir does not exist anymore - removing $outdir"
-            rm -rf "$outdir"
-         fi
-      fi
-   done
+    clean_old_files "$absolute_output_start_path"
+    clean_old_dirs "$absolute_output_start_path"
   else
     log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
     mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
@@ -85,7 +41,7 @@ refresh_output() {
   local adoc_dir_array=()
   find_adoc_dirs "$relative_start_path" adoc_dir_array
 
-  # Only add the start directory if the array is empty (i.e., no .adoc files found)
+  # for empty dir structure, add top level dir despite no content
   if [ ${#adoc_dir_array[@]} -eq 0 ]; then
     adoc_dir_array+=("$relative_start_path")
   fi
@@ -97,7 +53,8 @@ refresh_output() {
   for subdir in "${adoc_dir_array[@]}"; do
     log "INFO" "Processing dir $subdir"
     mkdir -p "$OUTPUT_DIR/$subdir"
-    find "$INPUT_DIR/$subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
+    find "$INPUT_DIR/$subdir"  -name "*.adoc" | while read -r adoc_file; do
+      log "INFO" "---- $adoc_file"
       (cd "$INPUT_DIR/$subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
     done
   done
