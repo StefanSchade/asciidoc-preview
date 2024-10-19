@@ -36,13 +36,30 @@ watch_changes() {
     output_changes_to_stdout "${changed_files[@]}" "File" "changed"
 
     # Handle changes
-    handle_dir_changes "${new_dirs[@]}" "new"
-    handle_dir_changes "${deleted_dirs[@]}" "deleted"
-    handle_dir_changes "${changed_dirs[@]}" "changed"
+    if [ "${#new_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${new_dirs[@]}" "new"
+    fi
 
-    handle_file_changes "${new_files[@]}" "new"
-    handle_file_changes "${deleted_files[@]}" "deleted"
-    handle_file_changes "${changed_files[@]}" "changed"
+    if [ "${#deleted_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${deleted_dirs[@]}" "deleted"
+    fi
+
+    if [ "${#changed_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${changed_dirs[@]}" "changed"
+    fi
+
+
+    if [ "${#new_files[@]}" -gt 0 ]; then
+       handle_file_changes "${new_files[@]}" "new"
+    fi
+
+    if [ "${#deleted_files[@]}" -gt 0 ]; then
+       handle_file_changes "${deleted_files[@]}" "deleted"
+    fi
+
+    if [ "${#changed_files[@]}" -gt 0 ]; then
+       handle_file_changes "${changed_files[@]}" "changed"
+    fi
 
     old_snapshot=("${new_snapshot[@]}")
   done

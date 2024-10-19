@@ -4,10 +4,10 @@
 set -euxo pipefail
 IFS=$'\n\t'
 
-source "$SCRIPT_DIR/generate_output/_check_existence.sh"
+source "$SCRIPT_DIR/helper/files/_sanitize_path.sh"
+source "$SCRIPT_DIR/helper/files/_check_existence.sh"
 source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
 source "$SCRIPT_DIR/generate_output/_generate_index.sh"
-source "$SCRIPT_DIR/helper/sanitize_path.sh"
 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
 
 refresh_output() {
@@ -25,13 +25,7 @@ refresh_output() {
   log "INFO" "absolute input start path $absolute_input_start_path"
   log "INFO" "absolute output start path $absolute_output_start_path"
 
-  if check_dir "$absolute_input_start_path"; then
-    log " INFO" "input dir is existing"
-  else
-    log "ERROR" "input dir is not existing"
-    exit 1
-  fi
-
+  assert_dir "$absolute_input_start_path"
 
   if [ -d "$absolute_output_start_path" ]; then
     log "INFO" "refreshing directory $absolute_output_start_path, cleaning html files that do not exist anymore"

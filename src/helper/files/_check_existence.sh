@@ -34,3 +34,22 @@ check_file() {
    return $?  # Return the result of check_existence
 }
 
+# throw error if dir not existing
+assert_dir() {
+  if check_dir "$1"; then
+    log "DEBUG" "dir $1 is existing"
+  else
+    log "ERROR" "dir $1 is not existing"
+    exit 1
+  fi
+}
+
+# throw error if file not existing
+assert_file() {
+  if check_file "$1"; then
+    log "DEBUG" "file $1 is existing"
+  else
+    log "ERROR" "file $1 is not existing"
+    exit 1
+  fi
+}
