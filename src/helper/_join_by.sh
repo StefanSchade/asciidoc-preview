@@ -2,7 +2,7 @@
 
 # Enable strict mode
 set -euxo pipefail
-IFS=$'\n\t'
+IFS=$'\n'
 
 join_by() {
     local IFS="$1"

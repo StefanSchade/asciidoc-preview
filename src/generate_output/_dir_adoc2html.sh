@@ -18,13 +18,13 @@ dir_adoc2html() {
   fi
 
   log "INFO" "dir_adoc2html(): Number of subdirectories found: ${#adoc_dir_array[@]}"
-  log "INFO" "dir_adoc2html(): Directories that have to be processed: $(join_by ' | ' "${adoc_dir_array[@]}")"
+  log "INFO" "dir_adoc2html(): Directories that have to be processed: $(join_by "; " "${adoc_dir_array[@]}")"
 
   for subdir in "${adoc_dir_array[@]}"; do
     sanitized_subdir=$(sanitize_path "$subdir")
-    log "INFO" "Processing dir $subdir - sanitized version $sanitized_subdir"
+    log "INFO" "Processing dir $subdir"
     mkdir -p "$OUTPUT_DIR/$sanitized_subdir"
-    find "$INPUT_DIR/$sanitized_subdir"  -name "*.adoc" | while read -r adoc_file; do
+    find "$INPUT_DIR/$sanitized_subdir" -maxdepth 1 -name "*.adoc" | while read -r adoc_file; do
       log "INFO" "---- $adoc_file"
       (cd "$INPUT_DIR/$sanitized_subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$sanitized_subdir" "$adoc_file" 2>&1)
     done

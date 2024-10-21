@@ -8,9 +8,6 @@ find_adoc_dirs() {
   local start_path="$1"
   local -n adoc_dirs_ref="$2"  # Name reference to update adoc_dirs_ref array
 
-  # Normalize start_path
-  start_path="${start_path%/}"
-
   # Find all .adoc files and extract their directories
   local adoc_files
   mapfile -t adoc_files < <(find "$start_path" -type f -name "*.adoc")
