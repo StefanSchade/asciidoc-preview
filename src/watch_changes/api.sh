@@ -8,6 +8,7 @@ IFS=$'\n\t'
 source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
 source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
 source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
+source "$SCRIPT_DIR/generate_output/_generate_index.sh"
 
 watch_changes() {
   local old_snapshot=()
@@ -35,8 +36,10 @@ watch_changes() {
     output_changes_to_stdout "${deleted_files[@]}" "File" "deleted"
     output_changes_to_stdout "${changed_files[@]}" "File" "changed"
 
-    # Handle changes
-    if [ "${#new_dirs[@]}" -gt 0 ]; then
+    new_or_changed_files=()
+    new_or_changed_files=("${new_files[@]}" "${changed_files[@]}")
+
+   if [ "${#new_dirs[@]}" -gt 0 ]; then
        handle_dir_changes "${new_dirs[@]}" "new"
     fi
 
@@ -48,17 +51,12 @@ watch_changes() {
        handle_dir_changes "${changed_dirs[@]}" "changed"
     fi
 
-
-    if [ "${#new_files[@]}" -gt 0 ]; then
-       handle_file_changes "${new_files[@]}" "new"
+    if [ "${#new_or_changed_files[@]}" -gt 0 ]; then
+       handle_file_changes "${new_or_changed_files[@]}" "new or changed"
     fi
-
+ 
     if [ "${#deleted_files[@]}" -gt 0 ]; then
        handle_file_changes "${deleted_files[@]}" "deleted"
-    fi
-
-    if [ "${#changed_files[@]}" -gt 0 ]; then
-       handle_file_changes "${changed_files[@]}" "changed"
     fi
 
     old_snapshot=("${new_snapshot[@]}")
@@ -84,16 +82,18 @@ handle_dir_changes() {
   local type=$2
   for dir in "${dirs[@]}"; do
     relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+    local output_dir_path="${OUTPUT_DIR}/${relative_path}"
     log "INFO" "Handling $type directory: $dir"
-    # Handle actions based on type
     if [ "$type" == "new" ]; then
-      refresh_output "$relative_path"
+      mkdir -p "$output_dir_path"
+      generate_index "$output_dir_path"
+      # refresh_output "$relative_path"
     elif [ "$type" == "deleted" ]; then
-      local output_dir_path="${OUTPUT_DIR}/${relative_path}"
       log "INFO" "Removing output directory: $output_dir_path"
       rm -rf "$output_dir_path"
     elif [ "$type" == "changed" ]; then
-      refresh_output "$relative_path"
+       generate_index "$output_dir_path"
+      # refresh_output "$relative_path"
     fi
   done
 }
@@ -105,14 +105,12 @@ handle_file_changes() {
     log "INFO" "handle_file_changes: $type $file"
     local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
     local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
-    if [ "$type" == "new" ]; then
+    if [ "$type" == "new_or_changed" ]; then
       asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
     elif [ "$type" == "deleted" ]; then
-      log "INFO" "Removing output file: $html_file"
+      log "INFO" "Removing output file: $html_file" 
       rm -f "$html_file"
-    elif [ "$type" == "changed" ]; then
-      asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
-    fi
+     fi
   done
 }
 

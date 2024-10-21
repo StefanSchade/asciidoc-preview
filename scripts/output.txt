@@ -1,0 +1,774 @@
+--- ../src/generate_output/_clean_old_dirs.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+clean_old_dirs() {
+  log "INFO" "clean_old_dirs from $1"
+  find "$1" -mindepth 1           \
+            -type d               \
+            -not -path "*/\.*"    \
+            -print0               | tr '\0' '\n' | while IFS= read -d $'\n' outdir; do
+      if [ -n "$outdir" ]; then  # if $dir is empty we do nothing
+         relative_output_path=$(output_path_to_relative_path "$outdir")
+         indir="${INPUT_DIR}/$relative_output_path"
+            log "DEBUG" "checking if directory $indir should be removed"
+         if check_dir "$indir"; then
+            log "DEBUG" "directory $indir exists - skip removal of $outdir"
+         else
+            log "DEBUG" "directory $indir does not exist anymore - removing $outdir"
+            rm -rf "$outdir"
+         fi
+      fi
+    done
+}
+ 
+
+
+
+--- ../src/generate_output/_dir_adoc2html.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+dir_adoc2html() {
+  # searching for directories containing *.adoc files below the current dir
+  local adoc_dir_array=()
+  find_adoc_dirs "$1" adoc_dir_array
+
+  # for empty dir structure, add top level dir despite no content
+  if [ ${#adoc_dir_array[@]} -eq 0 ]; then
+    adoc_dir_array+=("$1")
+  fi
+
+  log "INFO" "Number of subdirectories found: ${#adoc_dir_array[@]}"
+  log "INFO" "Directories that have to be processed: ${adoc_dir_array[*]}"
+
+  for subdir in "${adoc_dir_array[@]}"; do
+    log "INFO" "Processing dir $subdir"
+    mkdir -p "$OUTPUT_DIR/$subdir"
+    find "$INPUT_DIR/$subdir"  -name "*.adoc" | while read -r adoc_file; do
+      log "INFO" "---- $adoc_file"
+      (cd "$INPUT_DIR/$subdir" && asciidoctor -a toc -D "$OUTPUT_DIR/$subdir" "$adoc_file" 2>&1)
+    done
+  done
+}
+
+ 
+
+--- ../src/generate_output/_find_adoc_dirs.sh ---
+#!/bin/bash
+#
+# Example usage
+# declare -a adoc_dirs=()
+# find_adoc_dirs "/path/to/start" adoc_dirs
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+find_subdirectories() {
+    local start_path="$1"
+    local subdirs
+
+    # Use find to collect subdirectories
+    subdirs=$(find "$start_path" -type d -print)
+
+    # Filter out unnecessary entries
+    filtered_subdirs=()
+    while IFS= read -r subdir; do
+        if [[ -n "$subdir" && "$subdir" != */. && "$subdir" != */.. ]]; then
+            # Remove trailing "/." from paths
+            subdir=$(echo "$subdir" | sed 's:/$::g')
+            filtered_subdirs+=("$subdir")
+        fi
+    done <<< "$subdirs"
+
+    # Deduplicate the list
+    unique_subdirs=($(printf "%s\n" "${filtered_subdirs[@]}" | sort -u))
+
+    # Return the unique, filtered list
+    echo "${unique_subdirs[@]}"
+}
+
+# Traverse the directories to look for .adoc files
+find_adoc_dirs() {
+    local start_path="$1"
+    local -n adoc_dirs_ref="$2"  # nameref to update adoc_dirs_ref array
+
+    # Step 1: Get all subdirectories, filter and normalize them
+    subdirs=$(find_subdirectories "$start_path")
+
+    # Step 2: Check each subdirectory for .adoc files
+    for subdir in ${subdirs[@]}; do
+        echo "Checking subdir: $subdir"
+        if find "$subdir" -maxdepth 1 -name "*.adoc" | read -r; then
+            adoc_dirs_ref+=("$subdir")
+            echo "Found .adoc in: $subdir"
+        fi
+    done
+}
+
+
+--- ../src/generate_output/_generate_index.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+list_all_output_dirs() {
+  find "$OUTPUT_DIR" -type d
+}
+
+generate_index() {
+  local dir=$1
+  local index_file="${dir}/index.html"
+  echo "<html><body><h1>Generated Documentation</h1><ul>" > "$index_file"
+  
+  # Add links to subdirectory index files
+  for subdir in "$dir"/*; do
+    if [ -d "$subdir" ]; then
+      subdir_name=$(basename "$subdir")
+      echo "<li><strong><a href=\"$subdir_name/index.html\">$subdir_name</a></strong></li>" >> "$index_file"
+    fi
+  done
+
+  # Add links to HTML files in the current directory
+  for file in "$dir"/*.html; do
+    if [ -f "$file" ]; then
+      filename=$(basename "$file")
+      if [ "$filename" != "index.html" ]; then
+        echo "<li><a href=\"$filename\">$filename</a></li>" >> "$index_file"
+      fi
+    fi
+  done
+
+  echo "</ul></body></html>" >> "$index_file"
+}
+
+generate_all_indexes() {
+  local relative_start_path="$1"
+  local dirs=()
+
+  while IFS= read -r dir; do
+    dirs+=("$dir")
+  done < <(list_all_output_dirs $relative_start_path)
+
+  for dir in "${dirs[@]}"; do
+    log "INFO" "Generating index for: $dir"
+    generate_index "$dir"
+  done
+}
+
+--- ../src/generate_output/_clean_old_html.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+clean_old_files() {
+  log "INFO" "clean htmls, where adoc does not exist from dir $1"
+  find "$1" -name "*.html" -not -name "index.html" | while IFS= read -r html_file; do
+    relative_html_path=$(output_path_to_relative_path "$html_file")
+    input_file="${INPUT_DIR}/${relative_html_path%.html}.adoc"
+    if check_file "$input_file"; then
+        log "DEBUG" "$input_file exists - keep $html_file"
+    else
+        log "DEBUG" "$input_file does not exist anymore - removing $html_file"
+        rm -f "$html_file"
+    fi
+  done
+}
+ 
+
+--- ../src/generate_output/api.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+source "$SCRIPT_DIR/helper/files/_sanitize_path.sh"
+source "$SCRIPT_DIR/helper/files/_check_existence.sh"
+source "$SCRIPT_DIR/generate_output/_dir_adoc2html.sh"
+source "$SCRIPT_DIR/generate_output/_generate_index.sh"
+source "$SCRIPT_DIR/generate_output/_find_adoc_dirs.sh"
+source "$SCRIPT_DIR/generate_output/_clean_old_html.sh"
+source "$SCRIPT_DIR/generate_output/_clean_old_dirs.sh"
+source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
+
+refresh_output() {
+
+  log "INFO" "inside refresh output"
+
+  local relative_start_path=$1
+  local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
+  local absolute_output_start_path="${OUTPUT_DIR}/${relative_start_path}"
+
+  absolute_input_start_path=$(sanitize_path "$absolute_input_start_path")
+  absolute_output_start_path=$(sanitize_path "$absolute_output_start_path")
+
+  log "INFO" "refreshing output $relative_start_path"
+  log "INFO" "absolute input start path $absolute_input_start_path"
+  log "INFO" "absolute output start path $absolute_output_start_path"
+
+  assert_dir "$absolute_input_start_path"
+
+  if [ -d "$absolute_output_start_path" ]; then
+    clean_old_files "$absolute_output_start_path"
+    clean_old_dirs "$absolute_output_start_path"
+  else
+    log "INFO" "output directory $absolute_output_start_path not existing, creating new directory"
+    mkdir_command_output=$(mkdir -p "$absolute_output_start_path" 2>&1)
+  fi
+  dir_adoc2html "$relative_start_path"
+
+  # Generate index for all directories
+  generate_all_indexes "$relative_start_path"
+}
+
+--- ../src/helper/logger.sh ---
+!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+# Set default values if the variables are not provided
+: "${LOG_FILE:=/var/log/default_log_file.log}"    # Default log file
+: "${LOG_LEVEL:=INFO}"                            # Default log level
+
+MAX_SIZE=$((6 * 1024 * 1024))           # 6 MB
+THRESHOLD_SIZE=$((5 * 1024 * 1024))     # 5 MB
+
+# Ensure the log file exists
+touch "$LOG_FILE"
+
+# Log function
+log() {
+    local level="${1//[[:space:]]/}"  # Remove any spaces from the log level argument
+    shift
+    local message="$*"
+    local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+    # Define log levels
+    declare -A levels=( ["ERROR"]=0 ["WARN"]=1 ["INFO"]=2 ["DEBUG"]=3 )
+
+    # Check if the log level allows logging this message
+    if (( ${levels[$level]} <= ${levels[$LOG_LEVEL]} )); then
+        echo "$timestamp [$level] $message" >> "$LOG_FILE"
+    fi
+
+    # Check log file size and rotate if necessary
+    local file_size=$(stat -c%s "$LOG_FILE")
+    if (( file_size > MAX_SIZE )); then
+        echo "Log file size exceeded $MAX_SIZE bytes, rotating log file." >&2
+        local temp_file=$(mktemp)
+
+        # Rotate the log file, keeping only the last THRESHOLD_SIZE bytes
+        tail -c $THRESHOLD_SIZE "$LOG_FILE" > "$temp_file" && mv "$temp_file" "$LOG_FILE"
+        echo "Log file trimmed to $THRESHOLD_SIZE bytes." >&2
+    fi
+}
+
+--- ../src/helper/cleanup.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+cleanup() {
+    echo "Cleaning up..."
+    # Terminate watch and initialize WATCH_ID
+    if [ ! -z "${WATCH_PID:-}" ]; then
+        kill $WATCH_PID
+        wait $WATCH_PID 2>/dev/null
+    fi
+
+    # Terminate the livereload process
+    if [ ! -z "${LIVERELOAD_PID:-}" ]; then
+        kill $LIVERELOAD_PID
+        wait $LIVERELOAD_PID 2>/dev/null
+    fi
+
+    exit 0
+}
+
+--- ../src/helper/files/_sanitize_path.sh ---
+#! /bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+sanitize_path() {
+    local path=$1
+    # Remove trailing /. or /./
+    path="${path%.}"
+    path="${path%./}"
+    echo "$path"
+}
+
+
+
+
+--- ../src/helper/files/_check_existence.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+# Function to check if a file or directory exists
+check_existence() {
+    local path=$1
+    local type=$2  # 'dir' or 'file'
+
+    if [[ "$type" == "dir" && -d "$path" ]]; then
+        log "INFO" "Directory $path exists."
+        return 0  # Success
+    elif [[ "$type" == "file" && -f "$path" ]]; then
+        log "INFO" "File $path exists."
+        return 0  # Success
+    else
+        log "WARN" "$path does not exist."
+
+        return 1  # Return non-zero to indicate the path is missing
+    fi
+}
+
+# Check directory by calling check_existence
+check_dir() {
+   check_existence "$1" "dir"
+   return $?  # Return the result of check_existence
+}
+
+# Check file by calling check_existence
+check_file() {
+   check_existence "$1" "file"
+   return $?  # Return the result of check_existence
+}
+
+# throw error if dir not existing
+assert_dir() {
+  if check_dir "$1"; then
+    log "DEBUG" "dir $1 is existing"
+  else
+    log "ERROR" "dir $1 is not existing"
+    exit 1
+  fi
+}
+
+# throw error if file not existing
+assert_file() {
+  if check_file "$1"; then
+    log "DEBUG" "file $1 is existing"
+  else
+    log "ERROR" "file $1 is not existing"
+    exit 1
+  fi
+}
+
+--- ../src/helper/log_script_name.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+source "$SCRIPT_DIR/helper/logger.sh"
+
+log_script_name() {
+
+    local script_name=$(basename "$0")
+    local star_line=$(printf '%*s' "${#script_name}" | tr ' ' '*')
+
+    log "INFO" "**""${star_line}""**"
+    log "INFO" "* ""${script_name}"" *"
+    log "INFO" "**""${star_line}""**"
+}
+
+
+--- ../src/helper/absolute_path_to_relative_path.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+absolute_path_to_relative_path() {
+  local absolute_path=$1
+  local base_path=${2%/}  # Remove trailing slash from base path if any
+
+  # Ensure absolute path starts with base_path
+  if [[ $absolute_path == $base_path* ]]; then
+    echo "${absolute_path#$base_path/}"
+  else
+    echo "Error: The provided path does not start with the base path" >&2
+    return 1
+  fi
+}
+
+# Delegate function for input path
+input_path_to_relative_path() {
+  absolute_path_to_relative_path "$1" "$INPUT_DIR"
+}
+
+# Delegate function for output path
+output_path_to_relative_path() {
+  absolute_path_to_relative_path "$1" "$OUTPUT_DIR"
+}
+
+
+--- ../src/watch_changes/_compare_snapshots.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+# Compare snapshots and categorize changes
+compare_snapshots() {
+  local -n old_snapshot=$1
+  local -n new_snapshot=$2
+  local -n new_dirs_ref=$3
+  local -n deleted_dirs_ref=$4
+  local -n changed_dirs_ref=$5
+  local -n new_files_ref=$6
+  local -n deleted_files_ref=$7
+  local -n changed_files_ref=$8
+
+  local -A new_dirs_unique=()
+  local -A deleted_dirs_unique=()
+  local -A changed_dirs_unique=()
+  local -A new_files_unique=()
+  local -A deleted_files_unique=()
+  local -A changed_files_unique=()
+
+  # Rename snapshot lists to old/new for better clarity
+  local old_dirs_snapshot=$(printf "%s\n" "${old_snapshot[@]}" | grep '^D' | sort)
+  local new_dirs_snapshot=$(printf "%s\n" "${new_snapshot[@]}" | grep '^D' | sort)
+  local old_files_snapshot=$(printf "%s\n" "${old_snapshot[@]}" | grep '^F' | sort)
+  local new_files_snapshot=$(printf "%s\n" "${new_snapshot[@]}" | grep '^F' | sort)
+
+  # Handle directories
+  handle_changes "directory" "$old_dirs_snapshot" "$new_dirs_snapshot" new_dirs_unique deleted_dirs_unique changed_dirs_unique
+  # Handle files
+  handle_changes "file" "$old_files_snapshot" "$new_files_snapshot" new_files_unique deleted_files_unique changed_files_unique
+
+  # Transfer to reference variables for final output
+  new_dirs_ref=("${!new_dirs_unique[@]}")
+  deleted_dirs_ref=("${!deleted_dirs_unique[@]}")
+  changed_dirs_ref=("${!changed_dirs_unique[@]}")
+  new_files_ref=("${!new_files_unique[@]}")
+  deleted_files_ref=("${!deleted_files_unique[@]}")
+  changed_files_ref=("${!changed_files_unique[@]}")
+}
+
+# Generalized change handler
+handle_changes() {
+  local type=$1
+  local old_snapshot_list=$2
+  local new_snapshot_list=$3
+  local -n new_ref=$4
+  local -n deleted_ref=$5
+  local -n changed_ref=$6
+
+  # Check for removed entries (in old but not in new)
+  comm -23 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list") | while read -r line; do
+    log "DEBUG" "Found removed $type: $line"
+    deleted_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
+  done
+
+  # Check for added entries (in new but not in old)
+  comm -13 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list") | while read -r line; do
+    log "DEBUG" "Found added $type: $line"
+    new_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
+  done
+
+  # Detect changes based on timestamp differences (when present in both new and old)
+  while read -r old_line; do
+    local old_timestamp=$(echo "$old_line" | cut -d' ' -f2)
+    local entry=$(echo "$old_line" | cut -d' ' -f3-)
+    local new_line=$(echo "$new_snapshot_list" | grep " $entry$")
+    if [[ -n "$new_line" ]]; then
+      local new_timestamp=$(echo "$new_line" | cut -d' ' -f2)
+      if [[ "$old_timestamp" != "$new_timestamp" ]]; then
+        log "DEBUG" "Found timestamp change in $type: $entry"
+        changed_ref["$entry"]=1
+        # Remove from both new and deleted if it was marked as both (meaning it changed)
+        unset new_ref["$entry"]
+        unset deleted_ref["$entry"]
+      fi
+    fi
+  done <<< "$old_snapshot_list"
+}
+
+
+--- ../src/watch_changes/_generate_snapshot.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+# IFS=$'\n\t'
+
+generate_snapshot() {
+  local dir=$1
+  local -n snapshot=$2
+  snapshot=()
+
+  # Loop through each file or directory in the specified path
+  while IFS= read -r -d '' entry; do
+    if [ -d "$entry" ]; then
+      snapshot+=("D $(stat --format='%Y' "$entry") $entry")
+    elif [ -f "$entry" ]; then
+      # File snapshot with 'F' prefix
+      snapshot+=("F $(stat --format='%Y' "$entry") $entry")
+    else
+      echo "Warning: '$entry' does not exist or is neither a file nor a directory, skipping..." >&2
+    fi
+    done < <(find "$dir" -type f \( -name '*.adoc' -o -name '*.asciidoc' \) \
+                         -exec dirname {} \; | sort -u | \
+                         xargs -I {} find {} \( -type d -o -type f \
+                         \( -name '*.adoc' -o -name '*.asciidoc' \) \) -print0)
+  
+    log "DEBUG" "Snapshot for $dir: ${snapshot[*]}"
+}
+
+
+--- ../src/watch_changes/api.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+# Source necessary helper scripts
+source "$SCRIPT_DIR/watch_changes/_compare_snapshots.sh"
+source "$SCRIPT_DIR/watch_changes/_generate_snapshot.sh"
+source "$SCRIPT_DIR/helper/absolute_path_to_relative_path.sh"
+source "$SCRIPT_DIR/generate_output/_generate_index.sh"
+
+watch_changes() {
+  local old_snapshot=()
+  local new_snapshot=()
+
+  generate_snapshot "$INPUT_DIR" old_snapshot
+
+  while true; do
+    sleep 5
+    log "INFO" "watch_changes/api.sh: generate new snapshot"
+    generate_snapshot "$INPUT_DIR" new_snapshot
+
+    log "INFO" "watch_changes/api.sh: compare snapshots"
+    local new_dirs=() deleted_dirs=() changed_dirs=()
+    local new_files=() deleted_files=() changed_files=()
+
+    # Pass snapshots correctly to avoid circular reference
+    compare_snapshots old_snapshot new_snapshot new_dirs deleted_dirs changed_dirs new_files deleted_files changed_files
+
+    # Output categorized changes to stdout
+    output_changes_to_stdout "${new_dirs[@]}" "Dir" "new"
+    output_changes_to_stdout "${deleted_dirs[@]}" "Dir" "deleted"
+    output_changes_to_stdout "${changed_dirs[@]}" "Dir" "changed"
+    output_changes_to_stdout "${new_files[@]}" "File" "new"
+    output_changes_to_stdout "${deleted_files[@]}" "File" "deleted"
+    output_changes_to_stdout "${changed_files[@]}" "File" "changed"
+
+    new_or_changed_files=()
+    new_or_changed_files=("${new_files[@]}" "${changed_files[@]}")
+
+   if [ "${#new_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${new_dirs[@]}" "new"
+    fi
+
+    if [ "${#deleted_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${deleted_dirs[@]}" "deleted"
+    fi
+
+    if [ "${#changed_dirs[@]}" -gt 0 ]; then
+       handle_dir_changes "${changed_dirs[@]}" "changed"
+    fi
+
+    if [ "${#new_or_changed_files[@]}" -gt 0 ]; then
+       handle_file_changes "${new_or_changed_files[@]}" "new or changed"
+    fi
+ 
+    if [ "${#deleted_files[@]}" -gt 0 ]; then
+       handle_file_changes "${deleted_files[@]}" "deleted"
+    fi
+
+    old_snapshot=("${new_snapshot[@]}")
+  done
+}
+
+# Function to output changes to stdout in a nice format
+output_changes_to_stdout() {
+  local items=("$@")
+  
+  local type=${2:-"UnknownType"}
+  local change_type=${3:-"UnknownChangeType"}
+
+  # Output each item
+  for item in "${items[@]}"; do
+    echo "$type $change_type: $item"
+  done
+}
+
+
+handle_dir_changes() {
+  local -n dirs=$1  # Pass array by reference
+  local type=$2
+  for dir in "${dirs[@]}"; do
+    relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+    local output_dir_path="${OUTPUT_DIR}/${relative_path}"
+    log "INFO" "Handling $type directory: $dir"
+    if [ "$type" == "new" ]; then
+      mkdir -p "$output_dir_path"
+      generate_index "$output_dir_path"
+      # refresh_output "$relative_path"
+    elif [ "$type" == "deleted" ]; then
+      log "INFO" "Removing output directory: $output_dir_path"
+      rm -rf "$output_dir_path"
+    elif [ "$type" == "changed" ]; then
+       generate_index "$output_dir_path"
+      # refresh_output "$relative_path"
+    fi
+  done
+}
+
+handle_file_changes() {
+  local -n files=$1  # Pass array by reference
+  local type=$2
+  for file in "${files[@]}"; do
+    log "INFO" "handle_file_changes: $type $file"
+    local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
+    local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
+    if [ "$type" == "new_or_changed" ]; then
+      asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
+    elif [ "$type" == "deleted" ]; then
+      log "INFO" "Removing output file: $html_file" 
+      rm -f "$html_file"
+     fi
+  done
+}
+
+
+--- ../src/main.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+# author: Stefan Schade
+#
+# description:
+# starts the asciidoc-preview by performing these 3 tasks 
+# 1. scan INPUT_DIR for asciidoc files (*.adoc), transform them into
+#    html and replicate the input structure in OUTPUT_DIR
+# 2. setting up a local web server that serves the html files to
+#    localhost:4000. This server will refresh in case the html changes
+# 3. watch the INPUT_DIR for changes to the asciidoc files or directories
+#    and update the html.
+
+LOG_LEVEL=DEBUG
+
+# Get the directory of the currently executing script
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+
+# Define the input apind output directories
+OUTPUT_DIR=/workspace/output
+INPUT_DIR=/workspace/input
+LOG_DIR=/workspace/logs
+LOG_FILE="$LOG_DIR/logfile.txt"
+
+mkdir -p "$OUTPUT_DIR"
+mkdir -p "$LOG_DIR"
+touch "$LOG_FILE"
+
+source "$SCRIPT_DIR/helper/log_script_name.sh" && log_script_name
+source "$SCRIPT_DIR/helper/cleanup.sh"
+source "$SCRIPT_DIR/generate_output/api.sh"
+source "$SCRIPT_DIR/livereloadx_server/api.sh"
+source "$SCRIPT_DIR/watch_changes/api.sh"
+
+log "INFO" "start logging"
+log "INFO" "running script in directory $(pwd)"
+log "INFO" "sourced scripts in $SCRIPT_DIR"
+
+trap 'cleanup' SIGINT SIGTERM
+
+main() {
+
+  # initially process the whole input directory
+  # by using a path relative to the INPUT_DIR
+  log "INFO" "calling refresh outupt"
+  refresh_output "."
+  
+  start_server 
+
+  watch_changes &
+  WATCH_PID=$!
+
+  # Wait for background processes
+  wait $WATCH_PID
+  wait $LIVERELOAD_PID 
+
+}
+
+main
+
+
+--- ../src/livereloadx_server/_check_server_status.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+check_server_status() {
+  if ps -p $LIVERELOAD_PID > /dev/null; then
+    log "INFO" "livereloadx started successfully."
+  else
+    echo "Error: livereloadx failed to start."
+    exit 1
+  fi
+}
+
+--- ../src/livereloadx_server/api.sh ---
+#!/bin/bash
+
+# Enable strict mode
+set -euxo pipefail
+IFS=$'\n\t'
+
+source "$SCRIPT_DIR/livereloadx_server/_check_server_status.sh"
+
+start_server() {
+  cd "$OUTPUT_DIR"
+  log "INFO" "Current working directory before starting livereloadx: $(pwd)"
+  log "INFO" "starting livereloadx server..."
+  livereloadx -s . -p 4000 --verbose &
+
+  LIVERELOAD_PID=$!
+
+  # Wait for livereloadx to start
+  sleep 5
+
+  check_server_status
+
+  # Adding a test request to see if the livereloadx server is responding correctly
+  curl -I http://localhost:4000
+
+  # Exporting the PID to be used in cleanup
+  export LIVERELOAD_PID
+}
+
