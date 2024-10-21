@@ -10,20 +10,13 @@ absolute_path_to_relative_path() {
 
   # Ensure absolute path starts with base_path
   if [[ $absolute_path == $base_path* ]]; then
-    echo "${absolute_path#$base_path/}"
+    # Remove base_path and any leading slash from the result
+    local relative_path="${absolute_path#$base_path}"
+    relative_path="${relative_path#/}"
+    echo "$relative_path"
   else
     echo "Error: The provided path does not start with the base path" >&2
-    return 1
+    exit 1
   fi
-}
-
-# Delegate function for input path
-input_path_to_relative_path() {
-  absolute_path_to_relative_path "$1" "$INPUT_DIR"
-}
-
-# Delegate function for output path
-output_path_to_relative_path() {
-  absolute_path_to_relative_path "$1" "$OUTPUT_DIR"
 }
 
