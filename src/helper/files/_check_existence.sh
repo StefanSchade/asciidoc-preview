@@ -36,7 +36,7 @@ assert_dir() {
   if check_dir "$1"; then
      log "DEBUG" "assert_dir(): $1 is existing"
   else
-     log "ERROR" "assert_ddir(): $1 is not existing"
+     log "ERROR" "assert_dir(): $1 is not existing"
     exit 1
   fi
 }

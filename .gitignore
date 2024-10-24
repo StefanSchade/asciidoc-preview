@@ -1,6 +1,7 @@
 # my additions
 .env
 zscaler.crt
+logs/*
 
 tmp/*
 

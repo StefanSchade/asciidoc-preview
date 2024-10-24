@@ -19,7 +19,7 @@ refresh_output() {
   local relative_start_path=$(sanitize_path "$1")
   local absolute_input_start_path="${INPUT_DIR}/${relative_start_path}"
   local absolute_output_start_path="${OUTPUT_DIR}/${relative_start_path}"
-
+  log "DEBUG" "hallo"
   absolute_input_start_path=$(sanitize_path "$absolute_input_start_path")
   absolute_output_start_path=$(sanitize_path "$absolute_output_start_path")
 
@@ -27,6 +27,7 @@ refresh_output() {
   log "INFO" "refresh_output(): absolute_input_start_path=$absolute_input_start_path"
   log "INFO" "refresh_output(): absolute_output_start_path=$absolute_output_start_path"
 
+  log "DEBUG" "abc2 $absolute_input_start_path"
   assert_dir "$absolute_input_start_path"
 
   if [ -d "$absolute_output_start_path" ]; then

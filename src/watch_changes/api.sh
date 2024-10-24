@@ -16,12 +16,13 @@ watch_changes() {
 
   generate_snapshot "$INPUT_DIR" old_snapshot
 
+
   while true; do
     sleep 5
-    log "INFO" "watch_changes/api.sh: generate new snapshot"
+    log "INFO" "watch_changes/api.sh(): generate new snapshot"
     generate_snapshot "$INPUT_DIR" new_snapshot
 
-    log "INFO" "watch_changes/api.sh: compare snapshots"
+    log "INFO" "watch_changes/api.sh(): compare snapshots"
     local new_dirs=() deleted_dirs=() changed_dirs=()
     local new_files=() deleted_files=() changed_files=()
 
@@ -29,34 +30,34 @@ watch_changes() {
     compare_snapshots old_snapshot new_snapshot new_dirs deleted_dirs changed_dirs new_files deleted_files changed_files
 
     # Output categorized changes to stdout
-    output_changes_to_stdout "${new_dirs[@]}" "Dir" "new"
-    output_changes_to_stdout "${deleted_dirs[@]}" "Dir" "deleted"
-    output_changes_to_stdout "${changed_dirs[@]}" "Dir" "changed"
-    output_changes_to_stdout "${new_files[@]}" "File" "new"
-    output_changes_to_stdout "${deleted_files[@]}" "File" "deleted"
-    output_changes_to_stdout "${changed_files[@]}" "File" "changed"
+    output_changes_to_stdout "new" "Dir" "${new_dirs[@]}"
+    output_changes_to_stdout "deleted" "Dir" "${deleted_dirs[@]}"
+    output_changes_to_stdout "changed" "Dir" "${changed_dirs[@]}"
+    output_changes_to_stdout "new" "File" "${new_files[@]}"
+    output_changes_to_stdout "deleted" "File" "${deleted_files[@]}"
+    output_changes_to_stdout "changed" "File" "${changed_files[@]}"
 
     new_or_changed_files=()
     new_or_changed_files=("${new_files[@]}" "${changed_files[@]}")
 
    if [ "${#new_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "${new_dirs[@]}" "new"
+       handle_dir_changes "new" "${new_dirs[@]}"
     fi
 
     if [ "${#deleted_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "${deleted_dirs[@]}" "deleted"
+       handle_dir_changes "deleted" "${deleted_dirs[@]}"
     fi
 
     if [ "${#changed_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "${changed_dirs[@]}" "changed"
+       handle_dir_changes "changed" "${changed_dirs[@]}"
     fi
 
     if [ "${#new_or_changed_files[@]}" -gt 0 ]; then
-       handle_file_changes "${new_or_changed_files[@]}" "new or changed"
+       handle_file_changes "new_or_changed" "${new_or_changed_files[@]}"
     fi
  
     if [ "${#deleted_files[@]}" -gt 0 ]; then
-       handle_file_changes "${deleted_files[@]}" "deleted"
+       handle_file_changes "deleted" "${deleted_files[@]}"
     fi
 
     old_snapshot=("${new_snapshot[@]}")
@@ -65,37 +66,37 @@ watch_changes() {
 
 # Function to output changes to stdout in a nice format
 output_changes_to_stdout() {
-  local items=("$@")
-  
-  local type=${2:-"UnknownType"}
-  local change_type=${3:-"UnknownChangeType"}
+    local change_type=$1
+    local type=$2
+    shift 2
+    local items=("$@")
 
-  # Output each item
-  for item in "${items[@]}"; do
-    echo "$type $change_type: $item"
-  done
+    for item in "${items[@]}"; do
+        echo "${change_type} ${type}: ${item}"
+    done
 }
 
-
 handle_dir_changes() {
-  local -n dirs=$1  # Pass array by reference
-  local type=$2
-  for dir in "${dirs[@]}"; do
-    relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
-    local output_dir_path="${OUTPUT_DIR}/${relative_path}"
-    log "INFO" "Handling $type directory: $dir"
-    if [ "$type" == "new" ]; then
-      mkdir -p "$output_dir_path"
-      generate_index "$output_dir_path"
-      # refresh_output "$relative_path"
-    elif [ "$type" == "deleted" ]; then
-      log "INFO" "Removing output directory: $output_dir_path"
-      rm -rf "$output_dir_path"
-    elif [ "$type" == "changed" ]; then
-       generate_index "$output_dir_path"
-      # refresh_output "$relative_path"
-    fi
-  done
+    local type=$1
+    shift
+    local dirs=("$@")
+
+    for dir in "${dirs[@]}"; do
+        local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+        local output_dir_path="$OUTPUT_DIR/$relative_path"
+
+        log "INFO" "Handling ${type} directory: $dir"
+
+        if [ "$type" == "new" ]; then
+            mkdir -p "$output_dir_path"
+            refresh_output "$relative_path"
+        elif [ "$type" == "deleted" ]; then
+            log "INFO" "Removing output directory: $output_dir_path"
+            rm -rf "$output_dir_path"
+        elif [ "$type" == "changed" ]; then
+            refresh_output "$relative_path"
+        fi
+    done
 }
 
 handle_file_changes() {

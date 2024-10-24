@@ -34,6 +34,7 @@ set CONTAINER_NAME=%IMAGE_NAME%_%SANITIZED_PATH%
 cd ..
 docker build -t %IMAGE_NAME% -f "docker/Dockerfile" .
 docker run -it --rm -p 35729:35729 -p 4000:4000 -v %DOCUMENT_DIR%:/workspace/input -w /workspace --name %IMAGE_NAME% %IMAGE_NAME%
+
 echo %IMAGE_NAME%
 cd scripts
 
