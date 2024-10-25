@@ -17,7 +17,7 @@ watch_changes() {
   generate_snapshot "$INPUT_DIR" old_snapshot
 
   while true; do
-    sleep 20
+    sleep 5
     log "INFO" "watch_changes/api.sh(): generate new snapshot"
     generate_snapshot "$INPUT_DIR" new_snapshot
 
@@ -29,35 +29,70 @@ watch_changes() {
     compare_snapshots old_snapshot new_snapshot new_dirs deleted_dirs changed_dirs new_files deleted_files changed_files
 
     # Output categorized changes to stdout
+    log "INFO" "watch_changes/api.sh(): new directories"
     output_changes_to_stdout "new" "Dir" "${new_dirs[@]}"
+
+    log "INFO" "watch_changes/api.sh(): deleted directories"
     output_changes_to_stdout "deleted" "Dir" "${deleted_dirs[@]}"
+    
+    log "INFO" "watch_changes/api.sh(): changed directories"
     output_changes_to_stdout "changed" "Dir" "${changed_dirs[@]}"
+    
+    log "INFO" "watch_changes/api.sh(): new files"
     output_changes_to_stdout "new" "File" "${new_files[@]}"
+    
+    log "INFO" "watch_changes/api.sh(): deleted files"
     output_changes_to_stdout "deleted" "File" "${deleted_files[@]}"
+    
+    log "INFO" "watch_changes/api.sh(): changed files"
     output_changes_to_stdout "changed" "File" "${changed_files[@]}"
 
     new_or_changed_files=()
     new_or_changed_files=("${new_files[@]}" "${changed_files[@]}")
 
-   if [ "${#new_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "new" "${new_dirs[@]}"
-    fi
+    new_or_changed_dirs=()
+    new_or_changed_dirs=("${new_dirs[@]}" "${changed_dirs[@]}")
 
-    if [ "${#deleted_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "deleted" "${deleted_dirs[@]}"
-    fi
+    # create new directories
+    for dir in "${new_dirs[@]}"; do
+        local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+        local output_dir_path="$OUTPUT_DIR$relative_path"
+        log "INFO" "watch_changes(): creating new output dir $output_dir_path"
+        mkdir -p "$output_dir_path" 
+    done
 
-    if [ "${#changed_dirs[@]}" -gt 0 ]; then
-       handle_dir_changes "changed" "${changed_dirs[@]}"
-    fi
+    # (re) create html for new and changed adoc files
+    for file in "${new_or_changed_files[@]}"; do
+      local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
+      local html_file="${OUTPUT_DIR}${relative_path%.adoc}.html"
+      log "INFO" "watch_changes(): generating html for asciidoc file $html_file"
+      asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
+    done
 
-    if [ "${#new_or_changed_files[@]}" -gt 0 ]; then
-       handle_file_changes "new_or_changed" "${new_or_changed_files[@]}"
-    fi
- 
-    if [ "${#deleted_files[@]}" -gt 0 ]; then
-       handle_file_changes "deleted" "${deleted_files[@]}"
-    fi
+    # delete html for removed adoc files
+    for file in "${deleted_files[@]}"; do
+      local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
+      local html_file="${OUTPUT_DIR}${relative_path%.adoc}.html"
+      log "INFO" "watch_changes(): removing html for deleted asciidoc file $html_file"
+      rm -f $html_file
+     done
+
+    # delete removed directories
+    for dir in "${deleted_dirs[@]}"; do
+        local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+        local output_dir_path="$OUTPUT_DIR$relative_path"
+        log "INFO" "watch_changes(): removing output dir $output_dir_path"
+        rm -rf "$output_dir_path" 
+    done
+
+    # create new index.html files for all new or changed directories
+    for dir in "${new_or_changed_dirs[@]}"; do
+        local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
+        local output_dir_path="$OUTPUT_DIR$relative_path"
+        log "INFO" "watch_changes(): creating or updating index file for dir $output_dir_path"
+        generate_index $output_dir_path
+    done
+
 
     old_snapshot=("${new_snapshot[@]}")
   done
@@ -74,44 +109,5 @@ output_changes_to_stdout() {
         log "output_changes_to_stdout(): ${change_type} | ${type}: ${item} "
         echo "${change_type} ${type}: ${item}"
     done
-}
-
-handle_dir_changes() {
-    local type=$1
-    shift
-    local dirs=("$@")
-
-    for dir in "${dirs[@]}"; do
-        local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
-        local output_dir_path="$OUTPUT_DIR/$relative_path"
-
-        log "INFO" "handle_dir_changes(): Handling ${type} directory: $dir"
-
-        if [ "$type" == "new" ]; then
-            mkdir -p "$output_dir_path"
-            refresh_output "$relative_path"
-        elif [ "$type" == "deleted" ]; then
-            log "INFO" "handle_dir_changes(): Removing output directory: $output_dir_path"
-            rm -rf "$output_dir_path"
-        elif [ "$type" == "changed" ]; then
-            refresh_output "$relative_path"
-        fi
-    done
-}
-
-handle_file_changes() {
-  local -n files=$1  # Pass array by reference
-  local type=$2
-  for file in "${files[@]}"; do
-    log "INFO" "handle_file_changes: $type $file"
-    local relative_path=$(absolute_path_to_relative_path "$file" "$INPUT_DIR")
-    local html_file="${OUTPUT_DIR}/${relative_path%.adoc}.html"
-    if [ "$type" == "new_or_changed" ]; then
-      asciidoctor -a toc -D "$(dirname "$html_file")" "$file"
-    elif [ "$type" == "deleted" ]; then
-      log "INFO" "Removing output file: $html_file" 
-      rm -f "$html_file"
-     fi
-  done
 }
 
