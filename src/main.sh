@@ -21,9 +21,9 @@ LOG_LEVEL=DEBUG
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Define the input apind output directories
-OUTPUT_DIR=/workspace/output
-INPUT_DIR=/workspace/input
-LOG_DIR=/workspace/logs
+OUTPUT_DIR=/workspace/output/
+INPUT_DIR=/workspace/input/
+LOG_DIR=/workspace/logs/
 LOG_FILE="$LOG_DIR/logfile.txt"
 
 mkdir -p "$OUTPUT_DIR"

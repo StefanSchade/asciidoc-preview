@@ -27,11 +27,10 @@ refresh_output() {
   log "INFO" "refresh_output(): absolute_input_start_path=$absolute_input_start_path"
   log "INFO" "refresh_output(): absolute_output_start_path=$absolute_output_start_path"
 
-  log "DEBUG" "abc2 $absolute_input_start_path"
   assert_dir "$absolute_input_start_path"
 
   if [ -d "$absolute_output_start_path" ]; then
-    log "INFO" "refresh_otput(): dir $absolute_output_start_path exists, cleaning outdated content"
+    log "INFO" "refresh_output(): dir $absolute_output_start_path exists, cleaning outdated content"
     clean_old_files "$absolute_output_start_path"
     clean_old_dirs "$absolute_output_start_path"
   else

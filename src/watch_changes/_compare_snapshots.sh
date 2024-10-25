@@ -58,41 +58,48 @@ handle_changes() {
   local -n deleted_ref=$5
   local -n changed_ref=$6
 
-  # Check for removed entries (in old but not in new)
-  while read -r line; do
-    if [ -n "$line" ]; then
-      log "DEBUG" "Found removed $type: $line"
-      deleted_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
-    fi
-  done < <(comm -23 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list"))
+  declare -A old_snapshot_map
+  declare -A new_snapshot_map
 
-  # Check for added entries (in new but not in old)
-  while read -r line; do
-    if [ -n "$line" ]; then
-      log "DEBUG" "Found added $type: $line"
-      new_ref["$(echo "$line" | cut -d' ' -f3-)"]=1
-    fi
-  done < <(comm -13 <(echo "$old_snapshot_list") <(echo "$new_snapshot_list"))
+  # Read old snapshot into associative array
+  while IFS='|' read -r prefix old_timestamp entry; do
+    old_snapshot_map["$entry"]="$old_timestamp"
+  done <<< "$old_snapshot_list"
 
-  # Detect changes based on timestamp differences
-  while read -r old_line; do
-    local old_timestamp
-    old_timestamp=$(echo "$old_line" | cut -d' ' -f2)
-    local entry
-    entry=$(echo "$old_line" | cut -d' ' -f3-)
-    local new_line
-    new_line=$(echo "$new_snapshot_list" | grep "$entry$" || true)
-    if [[ -n "$new_line" ]]; then
-      local new_timestamp
-      new_timestamp=$(echo "$new_line" | cut -d' ' -f2)
+  # Read new snapshot into associative array
+  while IFS='|' read -r prefix new_timestamp entry; do
+    new_snapshot_map["$entry"]="$new_timestamp"
+  done <<< "$new_snapshot_list"
+
+  # Check for removed entries
+  for entry in "${!old_snapshot_map[@]}"; do
+    if [[ ! -v new_snapshot_map["$entry"] ]]; then
+      log "DEBUG" "Found removed $type: $entry"
+      deleted_ref["$entry"]=1
+    fi
+  done
+
+  # Check for added entries
+  for entry in "${!new_snapshot_map[@]}"; do
+    if [[ ! -v old_snapshot_map["$entry"] ]]; then
+      log "DEBUG" "Found added $type: $entry"
+      new_ref["$entry"]=1
+    fi
+  done
+
+  # Detect timestamp changes
+  for entry in "${!old_snapshot_map[@]}"; do
+    if [[ -v new_snapshot_map["$entry"] ]]; then
+      old_timestamp="${old_snapshot_map["$entry"]}"
+      new_timestamp="${new_snapshot_map["$entry"]}"
       if [[ "$old_timestamp" != "$new_timestamp" ]]; then
         log "DEBUG" "Found timestamp change in $type: $entry old timestamp=$old_timestamp new timestamp=$new_timestamp"
         changed_ref["$entry"]=1
-        # Remove from both new and deleted if it was marked as both
+        # Remove from new and deleted if marked as both
         unset new_ref["$entry"]
         unset deleted_ref["$entry"]
       fi
     fi
-  done <<< "$old_snapshot_list"
+  done
 }
 

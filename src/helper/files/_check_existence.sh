@@ -34,7 +34,7 @@ check_file() {
 # throw error if dir not existing
 assert_dir() {
   if check_dir "$1"; then
-     log "DEBUG" "assert_dir(): $1 is existing"
+     log "DEBUG" "assert_dir(): $1 exits"
   else
      log "ERROR" "assert_dir(): $1 is not existing"
     exit 1
@@ -44,7 +44,7 @@ assert_dir() {
 # throw error if file not existing
 assert_file() {
   if check_file "$1"; then
-     log "DEBUG" "assert_file(): $1 is existing"
+     log "DEBUG" "assert_file(): $1 exists"
   else
      log "ERROR" "assert_file(): $1 is not existing"
     exit 1

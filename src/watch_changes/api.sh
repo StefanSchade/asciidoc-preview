@@ -16,9 +16,8 @@ watch_changes() {
 
   generate_snapshot "$INPUT_DIR" old_snapshot
 
-
   while true; do
-    sleep 5
+    sleep 20
     log "INFO" "watch_changes/api.sh(): generate new snapshot"
     generate_snapshot "$INPUT_DIR" new_snapshot
 
@@ -72,6 +71,7 @@ output_changes_to_stdout() {
     local items=("$@")
 
     for item in "${items[@]}"; do
+        log "output_changes_to_stdout(): ${change_type} | ${type}: ${item} "
         echo "${change_type} ${type}: ${item}"
     done
 }
@@ -85,13 +85,13 @@ handle_dir_changes() {
         local relative_path=$(absolute_path_to_relative_path "$dir" "$INPUT_DIR")
         local output_dir_path="$OUTPUT_DIR/$relative_path"
 
-        log "INFO" "Handling ${type} directory: $dir"
+        log "INFO" "handle_dir_changes(): Handling ${type} directory: $dir"
 
         if [ "$type" == "new" ]; then
             mkdir -p "$output_dir_path"
             refresh_output "$relative_path"
         elif [ "$type" == "deleted" ]; then
-            log "INFO" "Removing output directory: $output_dir_path"
+            log "INFO" "handle_dir_changes(): Removing output directory: $output_dir_path"
             rm -rf "$output_dir_path"
         elif [ "$type" == "changed" ]; then
             refresh_output "$relative_path"
