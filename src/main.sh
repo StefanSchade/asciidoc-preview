@@ -21,24 +21,23 @@ LOG_LEVEL=DEBUG
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 # Define the input apind output directories
-OUTPUT_DIR=/workspace/output
-INPUT_DIR=/workspace/input
-LOG_DIR=/workspace/logs
+OUTPUT_DIR=/workspace/output/
+INPUT_DIR=/workspace/input/
+LOG_DIR=/workspace/logs/
 LOG_FILE="$LOG_DIR/logfile.txt"
 
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$LOG_DIR"
 touch "$LOG_FILE"
 
+source "$SCRIPT_DIR/helper/logger.sh"
 source "$SCRIPT_DIR/helper/log_script_name.sh" && log_script_name
 source "$SCRIPT_DIR/helper/cleanup.sh"
 source "$SCRIPT_DIR/generate_output/api.sh"
 source "$SCRIPT_DIR/livereloadx_server/api.sh"
 source "$SCRIPT_DIR/watch_changes/api.sh"
 
-log "INFO" "start logging"
-log "INFO" "running script in directory $(pwd)"
-log "INFO" "sourced scripts in $SCRIPT_DIR"
+log "INFO" "main(): running in $(pwd), sourced scripts in $SCRIPT_DIR"
 
 trap 'cleanup' SIGINT SIGTERM
 
@@ -57,8 +56,6 @@ main() {
   # Wait for background processes
   wait $WATCH_PID
   wait $LIVERELOAD_PID 
-
 }
 
 main
-
